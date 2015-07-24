@@ -2,43 +2,84 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <title>Backgammon</title>
-    <link href="Styles/TestStyle.css" rel="stylesheet" />    
-    <script src="Scripts/jquery-2.1.4.js"></script>
-    <script src="Scripts/kinetic-v4.4.3.js"></script>    
+    <link href="Styles/TestStyle.css" rel="stylesheet" />
+
+    <script src="Scripts/lib/kinetic-v4.4.3.js"></script>
 </head>
 <body>
     <div id="kinetic-container"></div>
 
+    <!--<script>
+        window.onload = function () {
+            var stage = new Kinetic.Stage( {
+                container: 'kinetic-container',
+                width: 800,
+                height: 600,
+            } );
+
+            var backgroundLayer = new Kinetic.Layer();
+
+
+            var imageObj = new Image();
+            imageObj.onload = function () {
+                var image = new Kinetic.Image( {
+                    x: 0,
+                    y: 0,
+                    image: imageObj,
+                    width: 800,
+                    height: 600
+                } );
+
+                backgroundLayer.add( image );
+
+                stage.add( backgroundLayer );
+                backgroundLayer.setZIndex( 0 );
+            };
+
+            imageObj.src = 'Images/niceTry_Board.jpg';
+
+            var circle1 = new Kinetic.Circle( {
+                x: 100,
+                y: 100,
+                radius: 30,
+                fill: 'green',
+                draggable: true,
+            } );
+
+            var circle2 = new Kinetic.Circle( {
+                x: 100,
+                y: 100,
+                radius: 30,
+                fill: 'blue',
+                draggable: true,
+            } );
+
+            var circleLayer = new Kinetic.Layer();
+
+            circleLayer.add( circle1 );
+            circleLayer.add( circle2 );
+
+
+            stage.add( circleLayer );
+
+            circleLayer.setZIndex( 5 );
+
+            console.log( '' );
+        }
+    </script>-->
+
     <script src="Scripts/GameObjects.js"></script>
-    <script src="Scripts/GameDraw.js"></script>
-    <script>
-        //var stage = new Kinetic.Stage( {
-        //    container: 'kinetic-container',
-        //    width: 800,
-        //    height: 600,
-        //} );
 
-        //var circle = new Kinetic.Circle( {
-        //    x: 200,
-        //    y: 300,
-        //    radius: 100,
-        //    fill: 'black',
-        //} );
+    <!--<script src="Scripts/GameDraw.js"></script>-->
 
-        //var layer = new Kinetic.Layer();
+    <script src="Scripts/GameEntryPoint.js"></script>
 
-        //layer.add(circle);
-        //stage.add( layer );
+    <!--<script>
 
-        var board = GameObjects.Board.init();
-        var pieceOne = GameObjects.Piece.init( 100, 100, 'green' );
-        var pieceTwo = GameObjects.Piece.init( 200, 100, 'purple' );
+        var player = Object.create( GameObjects.Player.init( 'first', 'red' ) );
+        player.isPlayerTurn = true;
 
-        board[0].add( pieceOne );
-
-        var draw = GameDraw.background;
-
-        console.log( 'test' );
-    </script>
+        console.log(player.isPlayerTurn);
+    </script>-->
 </body>
 </html>
