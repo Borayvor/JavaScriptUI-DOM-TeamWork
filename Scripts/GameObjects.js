@@ -3,7 +3,10 @@ var GameObjects = ( function () {
     var Board,
         Piece,
         Player,
-        BoardField;
+        BoardField,
+        CONSTANTS = {
+
+        };
 
     // pole ot igralnoto pole
     BoardField = ( function () {
@@ -30,6 +33,7 @@ var GameObjects = ( function () {
     // igralno pole
     Board = ( function () {
         var board = Object.create( [] );
+        var bagOfpieces = [];
         var boardLength = 24;
 
         Object.defineProperty( board, 'init', {
@@ -39,22 +43,81 @@ var GameObjects = ( function () {
                 this._players = players;
 
                 for ( i = 0; i < boardLength; i += 1 ) {
-                    board.push( Object.create( BoardField ).init() );
+                    this.push( Object.create( BoardField ).init() );
+                }
+
+                // TODO: refactor
+                // TODO: refactor  _pieces
+                for ( var piecenumber = 0; piecenumber < 2; piecenumber += 1 ) {
+                    var currentPiece = this._players[0]._pieces.pop();
+
+                    this[0].push( currentPiece );
                 }
                 
+                for ( var piecenumber = 0; piecenumber < 5; piecenumber += 1 ) {
+                    var currentPiece = this._players[1]._pieces.pop();
+
+                    this[5].push( currentPiece );
+                }
+                
+                for ( var piecenumber = 0; piecenumber < 3; piecenumber += 1 ) {
+                    var currentPiece = this._players[1]._pieces.pop();
+
+                    this[7].push( currentPiece );
+                }
+                
+                for ( var piecenumber = 0; piecenumber < 5; piecenumber += 1 ) {
+                    var currentPiece = this._players[0]._pieces.pop();
+
+                    this[11].push( currentPiece );
+                }
+                                
+                for ( var piecenumber = 0; piecenumber < 5; piecenumber += 1 ) {
+                    var currentPiece = this._players[1]._pieces.pop();
+
+                    this[12].push( currentPiece );
+                }
+                
+                for ( var piecenumber = 0; piecenumber < 3; piecenumber += 1 ) {
+                    var currentPiece = this._players[0]._pieces.pop();
+
+                    this[16].push( currentPiece );
+                }
+                
+                for ( var piecenumber = 0; piecenumber < 5; piecenumber += 1 ) {
+                    var currentPiece = this._players[0]._pieces.pop();
+
+                    this[18].push( currentPiece );
+                }
+                
+                for ( var piecenumber = 0; piecenumber < 2; piecenumber += 1 ) {
+                    var currentPiece = this._players[1]._pieces.pop();
+
+                    this[23].push( currentPiece );
+                }
+
                 return this;
             }
         } );
 
-        Object.defineProperty( board, 'getPiecePosition', {
-            value: function ( piece ) {
+        Object.defineProperty( board, 'addPiece', {
+            value: function ( piece, nuberOfBoardfield ) {
 
-
-
+                this[nuberOfBoardfield].push( piece );
 
                 return this;
             }
         } );
+
+        Object.defineProperty( board, 'removePiece', {
+            value: function ( piece, nuberOfBoardfield ) {
+
+                this[nuberOfBoardfield].pop();
+
+                return this;
+            }
+        } );
+               
 
         return board;
     }() );
@@ -62,7 +125,7 @@ var GameObjects = ( function () {
     // igrach
     Player = ( function () {
         var player = Object.create( {} );
-        var CONSTANTS = {
+        var CONSTANTS_PLAYER = {
             TOTAL_NUMBER_OF_PIECES: 15,
             INIT_X: 0,
             INIT_Y: 0,
@@ -73,19 +136,29 @@ var GameObjects = ( function () {
                 this.name = name;
                 this.color = color;
                 this.isPlayerTurn = false;
-                this.pieces = function () {
-                    var playerPieces = [],
-                        i,
-                        len = CONSTANTS.TOTAL_NUMBER_OF_PIECES;
+                this._pieces = [];
 
-                    for ( i = 0; i < len; i += 1 ) {
-                        playerPieces.push( Object
-                            .create( Piece).init( CONSTANTS.INIT_X, CONSTANTS.INIT_Y, color ) 
-                             );
-                    }
+                for ( i = 0; i < CONSTANTS_PLAYER.TOTAL_NUMBER_OF_PIECES; i += 1 ) {
+                    this._pieces.push( Object.create( Piece ).init( color )
+                        //.create( Piece ).init( CONSTANTS_PLAYER.INIT_X, CONSTANTS_PLAYER.INIT_Y, color )                        
+                         );
+                }
 
-                    return playerPieces;
-                };
+                return this;
+            }
+        } );
+
+        Object.defineProperty( player, 'addPiece', {
+            value: function ( piece ) {
+                this._pieces.push( piece );
+
+                return this;
+            }
+        } );
+
+        Object.defineProperty( player, 'removePiece', {
+            value: function ( piece ) {
+                this._pieces.pop();
 
                 return this;
             }
@@ -124,35 +197,13 @@ var GameObjects = ( function () {
     // pulowe
     Piece = ( function () {
         var piece = Object.create( {} );
-        var radiusSize = 24;
 
         Object.defineProperty( piece, 'init', {
-            value: function ( x, y, color, radius ) {
-                this.x = x;
-                this.y = y;
+            value: function ( color ) {
                 this.color = color;
-                this._radius = radius || radiusSize;
                 this.isChosen = false;
 
                 return this;
-            }
-        } );
-
-        Object.defineProperty( piece, 'x', {
-            get: function () {
-                return this._x;
-            },
-            set: function ( value ) {
-                this._x = value;
-            }
-        } );
-
-        Object.defineProperty( piece, 'y', {
-            get: function () {
-                return this._y;
-            },
-            set: function ( value ) {
-                this._y = value;
             }
         } );
 
@@ -162,15 +213,6 @@ var GameObjects = ( function () {
             },
             set: function ( value ) {
                 this._color = value;
-            }
-        } );
-
-        Object.defineProperty( piece, 'radius', {
-            get: function () {
-                return this._radius;
-            },
-            set: function ( value ) {
-                this._radius = value;
             }
         } );
 
@@ -186,7 +228,7 @@ var GameObjects = ( function () {
         return piece;
     }() );
 
-    
+
     return {
         Board: Board,
         Player: Player,
