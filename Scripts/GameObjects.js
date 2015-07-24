@@ -53,43 +53,43 @@ var GameObjects = ( function () {
 
                     this[0].push( currentPiece );
                 }
-                
+
                 for ( var piecenumber = 0; piecenumber < 5; piecenumber += 1 ) {
                     var currentPiece = this._players[1]._pieces.pop();
 
                     this[5].push( currentPiece );
                 }
-                
+
                 for ( var piecenumber = 0; piecenumber < 3; piecenumber += 1 ) {
                     var currentPiece = this._players[1]._pieces.pop();
 
                     this[7].push( currentPiece );
                 }
-                
+
                 for ( var piecenumber = 0; piecenumber < 5; piecenumber += 1 ) {
                     var currentPiece = this._players[0]._pieces.pop();
 
                     this[11].push( currentPiece );
                 }
-                                
+
                 for ( var piecenumber = 0; piecenumber < 5; piecenumber += 1 ) {
                     var currentPiece = this._players[1]._pieces.pop();
 
                     this[12].push( currentPiece );
                 }
-                
+
                 for ( var piecenumber = 0; piecenumber < 3; piecenumber += 1 ) {
                     var currentPiece = this._players[0]._pieces.pop();
 
                     this[16].push( currentPiece );
                 }
-                
+
                 for ( var piecenumber = 0; piecenumber < 5; piecenumber += 1 ) {
                     var currentPiece = this._players[0]._pieces.pop();
 
                     this[18].push( currentPiece );
                 }
-                
+
                 for ( var piecenumber = 0; piecenumber < 2; piecenumber += 1 ) {
                     var currentPiece = this._players[1]._pieces.pop();
 
@@ -117,7 +117,7 @@ var GameObjects = ( function () {
                 return this;
             }
         } );
-               
+
 
         return board;
     }() );
@@ -139,9 +139,7 @@ var GameObjects = ( function () {
                 this._pieces = [];
 
                 for ( i = 0; i < CONSTANTS_PLAYER.TOTAL_NUMBER_OF_PIECES; i += 1 ) {
-                    this._pieces.push( Object.create( Piece ).init( color )
-                        //.create( Piece ).init( CONSTANTS_PLAYER.INIT_X, CONSTANTS_PLAYER.INIT_Y, color )                        
-                         );
+                    this._pieces.push( Object.create( Piece ).init( color ) );
                 }
 
                 return this;

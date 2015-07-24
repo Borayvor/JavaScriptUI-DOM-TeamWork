@@ -9,77 +9,8 @@
 <body>
     <div id="kinetic-container"></div>
 
-    <!--<script>
-        window.onload = function () {
-            var stage = new Kinetic.Stage( {
-                container: 'kinetic-container',
-                width: 800,
-                height: 600,
-            } );
-
-            var backgroundLayer = new Kinetic.Layer();
-
-
-            var imageObj = new Image();
-            imageObj.onload = function () {
-                var image = new Kinetic.Image( {
-                    x: 0,
-                    y: 0,
-                    image: imageObj,
-                    width: 800,
-                    height: 600
-                } );
-
-                backgroundLayer.add( image );
-
-                stage.add( backgroundLayer );
-                backgroundLayer.setZIndex( 0 );
-            };
-
-            imageObj.src = 'Images/niceTry_Board.jpg';
-
-            var circle1 = new Kinetic.Circle( {
-                x: 100,
-                y: 100,
-                radius: 30,
-                fill: 'green',
-                draggable: true,
-            } );
-
-            var circle2 = new Kinetic.Circle( {
-                x: 100,
-                y: 100,
-                radius: 30,
-                fill: 'blue',
-                draggable: true,
-            } );
-
-            var circleLayer = new Kinetic.Layer();
-
-            circleLayer.add( circle1 );
-            circleLayer.add( circle2 );
-
-
-            stage.add( circleLayer );
-
-            circleLayer.setZIndex( 5 );
-
-            console.log( '' );
-        }
-    </script>-->
-
     <script src="Scripts/GameObjects.js"></script>
-
-    <!--<script src="Scripts/GameDraw.js"></script>-->
-
+    <script src="Scripts/GameDraw.js"></script>
     <script src="Scripts/GameEntryPoint.js"></script>
-
-    <!--<script>
-
-        var player = Object.create( GameObjects.Player.init( 'first', 'red' ) );
-        player.isPlayerTurn = true;
-
-        console.log(player.isPlayerTurn);
-    </script>-->
 </body>
 </html>
