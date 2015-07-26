@@ -1,12 +1,53 @@
 ﻿
 var GameObjects = ( function () {
-    var Board,
+    var Dice,
+        BoardField,
+        Board,
         Piece,
         Player,
-        BoardField,
         CONSTANTS = {
 
         };
+
+    // zarowe
+    Dice = ( function () {
+        var dice = Object.create( {} );
+
+        function generateNewNumber() {
+            var randNum = Math.round( Math.random() * 5 ) + 1;
+            return randNum;
+        }
+
+        Object.defineProperty( dice, 'init', {
+            value: function () {
+                this._number = generateNewNumber();
+
+                return this;
+            }
+        } );
+
+        Object.defineProperty( dice, 'number', {
+            get: function () {
+                return this._number;
+            }
+        } );
+
+        Object.defineProperty( dice, 'roll', {
+            value: function () {
+                var i,
+                    len = 10;
+
+                for ( i = 0; i < len; i += 1 ) {
+                    setTimeout( this._number = generateNewNumber(), 100 );
+                    console.log( this.number );
+                }                
+
+                return this;
+            }
+        } );
+
+        return dice;
+    }() );
 
     // pole ot igralnoto pole
     BoardField = ( function () {
@@ -32,7 +73,7 @@ var GameObjects = ( function () {
 
     // igralno pole
     Board = ( function () {
-        var board = Object.create( [] );        
+        var board = Object.create( [] );
         var boardLength = 24;
 
         Object.defineProperty( board, 'init', {
@@ -128,7 +169,7 @@ var GameObjects = ( function () {
 
         Object.defineProperty( board, 'removePiece', {
             value: function ( piece, nuberOfBoardfield ) {
-                
+
                 if ( this[nuberOfBoardfield].length <= 0 ) {
                     throw new Error( 'There no available pieces !' );
                 }
@@ -196,7 +237,7 @@ var GameObjects = ( function () {
         Object.defineProperty( player, 'getNumberOfPieces', {
             get: function () {
                 return this._pieces.length;
-            }           
+            }
         } );
 
         Object.defineProperty( player, 'name', {
@@ -265,6 +306,7 @@ var GameObjects = ( function () {
 
 
     return {
+        Dice: Dice,
         Board: Board,
         Player: Player,
         Piece: Piece,
