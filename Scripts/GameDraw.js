@@ -1,13 +1,17 @@
 ﻿/// <reference path="lib/kinetic.js" />
+/// <reference path="GameObjects.js" />
 
 var GameDraw = ( function () {
 
     var backgroundLayer,
         playGroundLayer,
+        playersLayer,
+        diceLayer,
         stage,
         width,
         height,
         CONSTANTS = {
+            CIRCLE_RADIUS: 25,
             OBJ_SIZE_X: 60,
             OBJ_SIZE_Y: 52,
             TOP_START_POS_X: 30,
@@ -28,6 +32,7 @@ var GameDraw = ( function () {
     backgroundLayer = new Kinetic.Layer();
     playGroundLayer = new Kinetic.Layer();
     playersLayer = new Kinetic.Layer();
+    diceLayer = new Kinetic.Layer();
 
     width = stage.getWidth();
     height = stage.getHeight();
@@ -38,14 +43,14 @@ var GameDraw = ( function () {
 
         if ( objX === 0 ) {
             x = CONSTANTS.OUT_OF_GAME_PIECE_START_POSITION_X + ( CONSTANTS.WIDTH_OF_BOX / 2 )
-            - (CONSTANTS.OBJ_SIZE_X / 2);
+            - ( CONSTANTS.OBJ_SIZE_X / 2 );
             y = CONSTANTS.OUT_OF_GAME_PIECE_START_POSITION_Y - 5 - CONSTANTS.OBJ_SIZE_Y +
-                - ( objY * ( CONSTANTS.OBJ_SIZE_Y / 6 ) );
+                -( objY * ( CONSTANTS.OBJ_SIZE_Y / 6 ) );
         } else if ( objX === 1 ) {
             x = CONSTANTS.OUT_OF_GAME_PIECE_START_POSITION_X + ( CONSTANTS.WIDTH_OF_BOX / 2 )
              - ( CONSTANTS.OBJ_SIZE_X / 2 );
             y = CONSTANTS.OUT_OF_GAME_PIECE_START_POSITION_Y + 5 +
-                + ( objY * ( CONSTANTS.OBJ_SIZE_Y / 6 ) );
+                +( objY * ( CONSTANTS.OBJ_SIZE_Y / 6 ) );
         }
 
         return {
@@ -57,17 +62,17 @@ var GameDraw = ( function () {
     function getPlayGroundPosition( objX, objY ) {
         var x,
             y,
-            middleBoard = 0;
+            middleBoardSize = 0;
 
         if ( objX < 6 || ( 11 < objX && 17 < objX ) ) {
-            middleBoard = 39;
+            middleBoardSize = 39;
         }
 
         if ( 12 <= objX && objX < 24 ) {
-            x = CONSTANTS.TOP_START_POS_X + ( ( objX - 12 ) * CONSTANTS.OBJ_SIZE_X ) + middleBoard;
+            x = CONSTANTS.TOP_START_POS_X + ( ( objX - 12 ) * CONSTANTS.OBJ_SIZE_X ) + middleBoardSize;
             y = CONSTANTS.TOP_START_POS_Y + ( objY * CONSTANTS.OBJ_SIZE_Y );
         } else if ( 0 <= objX && objX < 12 ) {
-            x = CONSTANTS.BOTTOM_START_POS_X + ( ( 11 - objX ) * CONSTANTS.OBJ_SIZE_X ) + middleBoard;
+            x = CONSTANTS.BOTTOM_START_POS_X + ( ( 11 - objX ) * CONSTANTS.OBJ_SIZE_X ) + middleBoardSize;
             y = CONSTANTS.BOTTOM_START_POS_Y - ( objY * CONSTANTS.OBJ_SIZE_Y );
         }
 
@@ -77,9 +82,37 @@ var GameDraw = ( function () {
         }
     };
 
+    function getCircle( position, color, draggable ) {
+        var radius = CONSTANTS.CIRCLE_RADIUS;
+        var posX = Math.floor( position.x + ( CONSTANTS.OBJ_SIZE_X / 2 ) );
+        var posY = Math.floor( position.y + ( CONSTANTS.OBJ_SIZE_Y / 2 ) );
+        var strokeColor;
+
+        if ( color === 'white' ) {
+            strokeColor = 'black';
+        } else if ( color === 'black' ) {
+            strokeColor = 'white';
+        } else {
+            strokeColor = 'purple';
+        }
+
+        var circle = new Kinetic.Circle( {
+            x: posX,
+            y: posY,
+            radius: radius,
+            stroke: strokeColor,
+            fillRadialGradientStartRadius: 0,
+            fillRadialGradientEndRadius: radius,
+            fillRadialGradientColorStops: [0, 'gray', 1, color],
+            draggable: false,
+        } );
+
+        return circle;
+    }
+
     function background() {
         var imageObjBackground = new Image();
-        var imageObjBoard = new Image();        
+        var imageObjBoard = new Image();
 
         imageObjBackground.onload = function () {
             var imageBackground = new Kinetic.Image( {
@@ -108,80 +141,29 @@ var GameDraw = ( function () {
 
             stage.add( backgroundLayer );
             backgroundLayer.setZIndex( 0 );
-        };            
-        
+        };
+
         imageObjBackground.src = 'Images/wood_background_BlackNWhite_1920x1080.jpg';
         imageObjBoard.src = 'Images/Board800x600.png';
     };
 
-    function createCircle( x, y, color ) {
-        var radius = 25;
-        var pos = getPlayGroundPosition( x, y );
-        var posX = Math.floor( pos.x + ( CONSTANTS.OBJ_SIZE_X / 2 ) );
-        var posY = Math.floor( pos.y + ( CONSTANTS.OBJ_SIZE_Y / 2 ) );
-        var strokeColor;
+    function createCircle( x, y, color, draggable ) {
+        var position = getPlayGroundPosition( x, y );
 
-        if ( color === 'white' ) {
-            strokeColor = 'black';
-        } else if ( color === 'black' ) {
-            strokeColor = 'white';
-        } else {
-            strokeColor = 'purple';
-        }
+        var newCircle = getCircle( position, color, draggable );
 
-        var circle = new Kinetic.Circle( {
-            x: posX,
-            y: posY,
-            radius: radius,
-            stroke: strokeColor,            
-            fillRadialGradientStartRadius: 0,
-            fillRadialGradientEndRadius: radius,
-            fillRadialGradientColorStops: [0, 'gray', 1, color],
-            draggable: true,
-        } );
+        playGroundLayer.add( newCircle );
 
-        playGroundLayer.add( circle );
-
-        circle.addEventListener( 'dragstart', function ( ) {
-          
-            return {
-                x: this.getAbsolutePosition().x,
-                y: this.getAbsolutePosition().y
-            }
-        }, false );
-    };
-    /////////////////////////
-
-    function createOutOfGameCircle( x, y, color ) {
-        var radius = 25;
-        var pos = getOutOfGamePiecePosition( x, y );
-        var posX = Math.floor( pos.x + ( CONSTANTS.OBJ_SIZE_X / 2 ) );
-        var posY = Math.floor( pos.y + ( CONSTANTS.OBJ_SIZE_Y / 2 ) );
-        var strokeColor;
-
-        if ( color === 'white' ) {
-            strokeColor = 'black';
-        } else if ( color === 'black' ) {
-            strokeColor = 'white';
-        } else {
-            strokeColor = 'purple';
-        }
-
-        var circle = new Kinetic.Circle( {
-            x: posX,
-            y: posY,
-            radius: radius,
-            stroke: strokeColor,
-            fillRadialGradientStartRadius: 0,
-            fillRadialGradientEndRadius: radius,
-            fillRadialGradientColorStops: [0, 'gray', 1, color],
-            draggable: true,
-        } );
-
-        playersLayer.add( circle );
     };
 
-    ////////////////////////////////
+    function createOutOfGameCircle( x, y, color, draggable ) {
+        var position = getOutOfGamePiecePosition( x, y );
+
+        var newCircle = getCircle( position, color, draggable );
+
+        playGroundLayer.add( newCircle );
+    };
+
     function createRectangle( x, y, width, height ) {
 
         //var pos = getPosition( x, y );
@@ -194,12 +176,48 @@ var GameDraw = ( function () {
             width: width,
             height: height,
             stroke: 'yellow',
-            //draggable: true,
+            draggable: false,
         } );
 
-        playersLayer.add( rect );               
+        playersLayer.add( rect );
     };
-         
+
+    function createDice(x, y) {
+        var img = new Image();
+
+        img.onload = function () {
+            var diceSprite = new Kinetic.Sprite( {
+                x: x,
+                y: y,               
+                scale: {
+                    x: 0.08,
+                    y: 0.08
+                },
+                image: img,
+                animation: 'idle',
+                animations: {
+                    idle: [
+                        0, 0, 557, 557,
+                        557, 0, 557, 557,
+                        1114, 0, 557, 557,
+                        1671, 0, 557, 557,
+                        2228, 0, 557, 557,
+                        2785, 0, 557, 557,
+                    ],
+                },
+                frameRate: 7,
+                frameIndex: 0,
+            } );
+            
+            diceLayer.add( diceSprite );
+            stage.add( diceLayer );
+            diceSprite.start();
+        };
+
+        img.src = 'Images/diceSprite.png';
+    }
+
+
 
     function playGround() {
         stage.add( playersLayer );
@@ -209,14 +227,15 @@ var GameDraw = ( function () {
         stage.draw();
     };
 
-    
+   
 
     return {
-        background: background,        
+        background: background,
         playGround: playGround,
         createCircle: createCircle,
         createRectangle: createRectangle,
         createOutOfGameCircle: createOutOfGameCircle,
+        createDice: createDice,
     }
 }() );
 

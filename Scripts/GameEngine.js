@@ -2,6 +2,7 @@
 /// <reference path="GameDraw.js" />
 
 var GameEngine = ( function () {
+    var board;
 
     function initGame() {
         var x,
@@ -10,13 +11,17 @@ var GameEngine = ( function () {
         i,
         j,
         lengthBoard,
-        lengthField;
+        lengthField,
+        draggable;
 
         var players = [];
         players.push( Object.create( GameObjects.Player ).init( 'First', 'white' ) );
         players.push( Object.create( GameObjects.Player ).init( 'Second', 'black' ) );
 
-        var board = GameObjects.Board.init( players );
+        players[0].isPlayerTurn = true;
+        players[1].isPlayerTurn = false;
+
+        board = GameObjects.Board.init( players );
 
         GameDraw.background();
 
@@ -28,15 +33,19 @@ var GameEngine = ( function () {
             for ( j = 0; j < lengthField; j += 1 ) {
                 x = i;
                 y = j;
-                color = board[i][j].color;
+                color = board[x][y].color;
 
-                GameDraw.createCircle( x, y, color );
+                if ( j !== ( lengthField - 1 ) ) {
+                    draggable = false;
+                } else {
+                    draggable = true;
+                }
+
+                GameDraw.createCircle( x, y, color, draggable );
 
             }
         }
-
-        //color = board.GetFirstPlayer.color;
-
+                
         GameDraw.createRectangle( 850, 110, 100, 200 );
         GameDraw.createRectangle( 850, 310, 100, 200 );
 
@@ -56,18 +65,15 @@ var GameEngine = ( function () {
         }
 
         GameDraw.playGround();
-    }        
-       
+    }
 
-   
+
+
     function start() {
         initGame();
 
-        document.addEventListener( "dragstart", function ( event ) {
-            console.log( 'x = ' + event.clientX );
-            console.log( 'y = ' + event.clientY );
-        } );
-
+        console.log( board.GetPlayers[0].isPlayerTurn );
+        console.log( board.GetPlayers[1].isPlayerTurn )
     }
 
     return {
