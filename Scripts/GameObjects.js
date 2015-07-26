@@ -32,8 +32,7 @@ var GameObjects = ( function () {
 
     // igralno pole
     Board = ( function () {
-        var board = Object.create( [] );
-        var bagOfpieces = [];
+        var board = Object.create( [] );        
         var boardLength = 24;
 
         Object.defineProperty( board, 'init', {
@@ -84,19 +83,37 @@ var GameObjects = ( function () {
                     this[16].push( currentPiece );
                 }
 
-                for ( var piecenumber = 0; piecenumber < 5; piecenumber += 1 ) {
-                    var currentPiece = this._players[0]._pieces.pop();
+                //for ( var piecenumber = 0; piecenumber < 5; piecenumber += 1 ) {
+                //    var currentPiece = this._players[0]._pieces.pop();
 
-                    this[18].push( currentPiece );
-                }
+                //    this[18].push( currentPiece );
+                //}
 
-                for ( var piecenumber = 0; piecenumber < 2; piecenumber += 1 ) {
-                    var currentPiece = this._players[1]._pieces.pop();
+                //for ( var piecenumber = 0; piecenumber < 2; piecenumber += 1 ) {
+                //    var currentPiece = this._players[1]._pieces.pop();
 
-                    this[23].push( currentPiece );
-                }
+                //    this[23].push( currentPiece );
+                //}
 
                 return this;
+            }
+        } );
+
+        //Object.defineProperty( board, 'GetFirstPlayer', {
+        //    get: function () {
+        //        return this._players[0];
+        //    }
+        //} );
+
+        //Object.defineProperty( board, 'GetSecondPlayer', {
+        //    get: function () {
+        //        return this._players[1];
+        //    }
+        //} );
+
+        Object.defineProperty( board, 'GetPlayers', {
+            get: function () {
+                return this._players;
             }
         } );
 
@@ -111,6 +128,10 @@ var GameObjects = ( function () {
 
         Object.defineProperty( board, 'removePiece', {
             value: function ( piece, nuberOfBoardfield ) {
+                
+                if ( this[nuberOfBoardfield].length <= 0 ) {
+                    throw new Error( 'There no available pieces !' );
+                }
 
                 this[nuberOfBoardfield].pop();
 
@@ -148,6 +169,11 @@ var GameObjects = ( function () {
 
         Object.defineProperty( player, 'addPiece', {
             value: function ( piece ) {
+
+                if ( piece.color !== this.color ) {
+                    throw new Error( 'This piece does not belong to this player !' );
+                }
+
                 this._pieces.push( piece );
 
                 return this;
@@ -156,10 +182,21 @@ var GameObjects = ( function () {
 
         Object.defineProperty( player, 'removePiece', {
             value: function ( piece ) {
+
+                if ( this._pieces.length <= 0 ) {
+                    throw new Error( 'There no available pieces !' );
+                }
+
                 this._pieces.pop();
 
                 return this;
             }
+        } );
+
+        Object.defineProperty( player, 'getNumberOfPieces', {
+            get: function () {
+                return this._pieces.length;
+            }           
         } );
 
         Object.defineProperty( player, 'name', {

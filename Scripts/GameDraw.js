@@ -14,21 +14,47 @@ var GameDraw = ( function () {
             TOP_START_POS_Y: 31,
             BOTTOM_START_POS_X: 30,
             BOTTOM_START_POS_Y: 537,
+            OUT_OF_GAME_PIECE_START_POSITION_X: 850,
+            OUT_OF_GAME_PIECE_START_POSITION_Y: 310,
+            WIDTH_OF_BOX: 100,
         };
 
     stage = new Kinetic.Stage( {
         container: 'kinetic-container',
-        width: 1680,
-        height: 1050,
+        width: 1359,
+        height: 639,
     } );
 
     backgroundLayer = new Kinetic.Layer();
     playGroundLayer = new Kinetic.Layer();
+    playersLayer = new Kinetic.Layer();
 
     width = stage.getWidth();
     height = stage.getHeight();
 
-    function getPosition( objX, objY ) {
+    function getOutOfGamePiecePosition( objX, objY ) {
+        var x,
+            y;
+
+        if ( objX === 0 ) {
+            x = CONSTANTS.OUT_OF_GAME_PIECE_START_POSITION_X + ( CONSTANTS.WIDTH_OF_BOX / 2 )
+            - (CONSTANTS.OBJ_SIZE_X / 2);
+            y = CONSTANTS.OUT_OF_GAME_PIECE_START_POSITION_Y - 5 - CONSTANTS.OBJ_SIZE_Y +
+                - ( objY * ( CONSTANTS.OBJ_SIZE_Y / 6 ) );
+        } else if ( objX === 1 ) {
+            x = CONSTANTS.OUT_OF_GAME_PIECE_START_POSITION_X + ( CONSTANTS.WIDTH_OF_BOX / 2 )
+             - ( CONSTANTS.OBJ_SIZE_X / 2 );
+            y = CONSTANTS.OUT_OF_GAME_PIECE_START_POSITION_Y + 5 +
+                + ( objY * ( CONSTANTS.OBJ_SIZE_Y / 6 ) );
+        }
+
+        return {
+            x: x,
+            y: y,
+        }
+    }
+
+    function getPlayGroundPosition( objX, objY ) {
         var x,
             y,
             middleBoard = 0;
@@ -67,11 +93,6 @@ var GameDraw = ( function () {
             backgroundLayer.add( imageBackground );
             imageBackground.setZIndex( 0 );
 
-            stage.add( backgroundLayer );
-            backgroundLayer.setZIndex( 0 );
-        };
-
-        imageObjBoard.onload = function () {
             var imageBoard = new Kinetic.Image( {
                 x: 10,
                 y: 10,
@@ -87,16 +108,15 @@ var GameDraw = ( function () {
 
             stage.add( backgroundLayer );
             backgroundLayer.setZIndex( 0 );
-        };
-            
+        };            
         
         imageObjBackground.src = 'Images/wood_background_BlackNWhite_1920x1080.jpg';
-        imageObjBoard.src = 'Images/niceTry_Board.jpg';
+        imageObjBoard.src = 'Images/Board800x600.png';
     };
 
     function createCircle( x, y, color ) {
         var radius = 25;
-        var pos = getPosition( x, y );
+        var pos = getPlayGroundPosition( x, y );
         var posX = Math.floor( pos.x + ( CONSTANTS.OBJ_SIZE_X / 2 ) );
         var posY = Math.floor( pos.y + ( CONSTANTS.OBJ_SIZE_Y / 2 ) );
         var strokeColor;
@@ -121,38 +141,82 @@ var GameDraw = ( function () {
         } );
 
         playGroundLayer.add( circle );
+
+        circle.addEventListener( 'dragstart', function ( ) {
+          
+            return {
+                x: this.getAbsolutePosition().x,
+                y: this.getAbsolutePosition().y
+            }
+        }, false );
+    };
+    /////////////////////////
+
+    function createOutOfGameCircle( x, y, color ) {
+        var radius = 25;
+        var pos = getOutOfGamePiecePosition( x, y );
+        var posX = Math.floor( pos.x + ( CONSTANTS.OBJ_SIZE_X / 2 ) );
+        var posY = Math.floor( pos.y + ( CONSTANTS.OBJ_SIZE_Y / 2 ) );
+        var strokeColor;
+
+        if ( color === 'white' ) {
+            strokeColor = 'black';
+        } else if ( color === 'black' ) {
+            strokeColor = 'white';
+        } else {
+            strokeColor = 'purple';
+        }
+
+        var circle = new Kinetic.Circle( {
+            x: posX,
+            y: posY,
+            radius: radius,
+            stroke: strokeColor,
+            fillRadialGradientStartRadius: 0,
+            fillRadialGradientEndRadius: radius,
+            fillRadialGradientColorStops: [0, 'gray', 1, color],
+            draggable: true,
+        } );
+
+        playersLayer.add( circle );
     };
 
-    //function createRectangle( x, y, color ) {
+    ////////////////////////////////
+    function createRectangle( x, y, width, height ) {
 
-    //    var pos = getPosition( x, y );
-    //    var posX = Math.floor( pos.x );
-    //    var posY = Math.floor( pos.y );
+        //var pos = getPosition( x, y );
+        //var posX = Math.floor( pos.x );
+        //var posY = Math.floor( pos.y );
 
-    //    var rect = new Kinetic.Rect( {
-    //        x: posX,
-    //        y: posY,
-    //        width: CONSTANTS.OBJ_SIZE_X,
-    //        height: CONSTANTS.OBJ_SIZE_Y,
-    //        fill: color,
-    //        draggable: true,
-    //    } );
+        var rect = new Kinetic.Rect( {
+            x: x,
+            y: y,
+            width: width,
+            height: height,
+            stroke: 'yellow',
+            //draggable: true,
+        } );
 
-    //    playGroundLayer.add( rect );
-    //};
+        playersLayer.add( rect );               
+    };
+         
+
+    function playGround() {
+        stage.add( playersLayer );
+        playersLayer.setZIndex( 5 );
+        stage.add( playGroundLayer );
+        playGroundLayer.setZIndex( 10 );
+        stage.draw();
+    };
 
     
 
-    function playGround() {
-        stage.add( playGroundLayer );
-        playGroundLayer.setZIndex( 10 );
-    };
-
     return {
-        background: background,
+        background: background,        
         playGround: playGround,
         createCircle: createCircle,
-        //createRectangle: createRectangle,
+        createRectangle: createRectangle,
+        createOutOfGameCircle: createOutOfGameCircle,
     }
 }() );
 
