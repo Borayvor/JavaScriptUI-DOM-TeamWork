@@ -222,6 +222,7 @@ var GameDraw = ( function () {
         //}
 
         updatePlayGround( board );
+        createDicesButton();
 
         stage.add( positionLayer );
         stage.add( playGroundLayer );
