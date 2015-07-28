@@ -2,8 +2,5 @@
 /// <reference path="GameDraw.js" />
 
 ( function () {
-        
     GameEngine.start();
-
-	console.log( 'test' );
 }() )
