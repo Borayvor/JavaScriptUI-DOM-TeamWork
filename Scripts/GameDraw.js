@@ -208,6 +208,36 @@ var GameDraw = ( function () {
             GameEngine.update( pos.x );
         } );
     };
+    
+    ///Dice
+    function createDicesButton() {
+        var diceImg = new Image();
+
+        diceImg.onload = function () {
+            var diceImage = new Kinetic.Image( {
+                x: 950,
+                y: 280,
+                image: diceImg,
+                width: 80,
+                height: 80,
+               
+            } );
+
+            diceLayer.add( diceImage );
+
+            stage.add( diceLayer );
+            diceLayer.setZIndex( 20 );
+
+            diceImage.addEventListener( 'click', function () {
+                diceImage.opacity(0);
+
+                diceImage.opacity( 1 );
+            } );
+        };
+
+        diceImg.src = 'Images/dice2.png';
+    }
+
 
     function initGame( board ) {
 
