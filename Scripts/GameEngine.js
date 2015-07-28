@@ -1,82 +1,100 @@
-﻿/// <reference path="GameObjects.js" />
-/// <reference path="GameDraw.js" />
+﻿/// <reference path="GameDraw.js" />
+/// <reference path="GameObjects.js" />
 
 var GameEngine = ( function () {
     var board;
 
-    function initGame() {
+    function start() {
         var x,
-        y,
-        color,
-        i,
-        j,
-        lengthBoard,
-        lengthField,
-        draggable;
+            y,
+            color,
+            lengthBoard,
+            lengthField;
 
         var players = [];
-        players.push( Object.create( GameObjects.Player ).init( 'First', 'white' ) );
-        players.push( Object.create( GameObjects.Player ).init( 'Second', 'black' ) );
+        players.push(Object.create(GameObjects.Player).init('First', 'white'));
+        players.push(Object.create(GameObjects.Player).init('Second', 'black'));
 
-        players[0].isPlayerTurn = true;
-        players[1].isPlayerTurn = false;
-
-        board = GameObjects.Board.init( players );
+        // board = Object.create(GameObjects.Board).init(players);
+        board = Object.create( GameObjects.Board ).init();
 
         GameDraw.background();
 
         lengthBoard = board.length;
 
-        for ( i = 0; i < lengthBoard; i += 1 ) {
-            lengthField = board[i].length;
+        for (x = 0; x < lengthBoard; x += 1) {
+            lengthField = board[x].length;                       
 
-            for ( j = 0; j < lengthField; j += 1 ) {
-                x = i;
-                y = j;
+            for (y = 0; y < lengthField; y += 1) {               
                 color = board[x][y].color;
 
-                if ( j !== ( lengthField - 1 ) ) {
-                    draggable = false;
-                } else {
-                    draggable = true;
-                }
-
-                GameDraw.createCircle( x, y, color, draggable );
-
+                GameDraw.createCircle(x, y, color);
             }
-        }
-                
-        GameDraw.createRectangle( 850, 110, 100, 200 );
-        GameDraw.createRectangle( 850, 310, 100, 200 );
 
-        var len = board.GetPlayers.length;
-
-        for ( i = 0; i < len; i += 1 ) {
-            lenngthPlayer = board.GetPlayers[i].getNumberOfPieces;
-
-            for ( j = 0; j < lenngthPlayer; j += 1 ) {
-                x = i;
-                y = j;
-                color = board.GetPlayers[i].color;
-
-                GameDraw.createOutOfGameCircle( x, y, color );
-
+            if (x < 13 ) {
+                GameDraw.createRectangle( x, 4 );
+            } else {
+                GameDraw.createRectangle( x, 0 );
             }
         }
 
         GameDraw.playGround();
     }
 
+    
 
+    function update(){
+        // currentPlayer = GetCurrentPlayer - depending on player.isOnTurn or isFirstPlayerOnTurn
 
-    function start() {
-        initGame();
+        // flag hasThrownDice -> if not - throw dice(allowedMoves = diceResult, currentPlayerMoves = 0); else - continue
 
-        console.log( board.GetPlayers[0].isPlayerTurn );
-        console.log( board.GetPlayers[1].isPlayerTurn )
+        // if (currentPlayer.hasHitPiece) -> Call function(s) to deal with this situation.
+            // if can't put piece -> playerMoves = allowedMoves
+
+        // if ((currentPlayerMoves < allowedMoves) && hasMovedPiece (sets to true when called from onDrag event on piece)
+
+            // Subcases: move from position to position/ collect piece
+            // Call function(s) to deal with this situation. -> hasMovedPiece = false, currentPlayerMoves++;
+
+        // Missed logic?
+
+        // if current player has no pieces on the board -> He wins.
+
+        // if (playerMoves === allowedMoves) -> change player, hasThrownDice = false
+    }
+
+    function updatePlayGround() {
+        var x,
+            y,
+            lengthBoard = board.length,
+            lengthField;
+
+        for ( x = 0; x < lengthBoard; x += 1 ) {
+            lengthField = board[x].length;
+
+            for ( y = 0; y < lengthField; y += 1 ) {
+                color = board[x][y].color;
+
+                GameDraw.createCircle( x, y, color );
+            }
+        }
+
+        GameDraw.updatePlayGround();
+    }
+   
+    function test(x, y) {
+        //alert( x + ' ' + y );
+       
+        board.movePiece( 6, 7 );
+       
+        updatePlayGround();        
     }
 
     return {
-        start: start
-    }
-}() )
+        start: start,
+        update: update,
+        test: test,
+    };
+}());
+
+// All events will call GameEngine.Update() and GameDraw.Update().
