@@ -28,6 +28,7 @@ var GameDraw = ( function () {
     backgroundLayer = new Kinetic.Layer();
     playGroundLayer = new Kinetic.Layer();
     positionLayer = new Kinetic.Layer();
+    diceLayer = new Kinetic.Layer();
 
     width = stage.getWidth();
     height = stage.getHeight();
@@ -37,9 +38,17 @@ var GameDraw = ( function () {
             y;            
 
         if ( objY < 310 ) {
-            x = Math.round( objX / CONSTANTS.OBJ_SIZE_X ) + 12;
+            if ( objX < 810 ) {
+                x = Math.round( objX / CONSTANTS.OBJ_SIZE_X ) + 12;
+            } else {
+                x = 25;
+            }
         } else {
-            x = 13 - Math.round( objX / CONSTANTS.OBJ_SIZE_X );
+            if ( objX < 810 ) {
+                x = 13 - Math.round( objX / CONSTANTS.OBJ_SIZE_X );
+            } else {
+                x = 0;
+            }
         }
 
         return {
@@ -51,7 +60,7 @@ var GameDraw = ( function () {
         var x,
             y,
             middleBoard = 0;
-
+              
         if ( objX === 0 || objX === 25 ) {
             outOfGamePosition = 50;
         }
@@ -63,7 +72,7 @@ var GameDraw = ( function () {
         if ( objX === 25 ) {
             x = CONSTANTS.TOP_START_POS_X + ( ( objX - 13 ) * CONSTANTS.OBJ_SIZE_X )
                 + middleBoard + outOfGamePosition;
-            y = CONSTANTS.TOP_START_POS_Y + ( objY * CONSTANTS.OBJ_SIZE_Y );
+            y = CONSTANTS.TOP_START_POS_Y;
         } else if ( 13 <= objX && objX < 25 ) {
             x = CONSTANTS.TOP_START_POS_X + ( ( objX - 13 ) * CONSTANTS.OBJ_SIZE_X ) + middleBoard;
             y = CONSTANTS.TOP_START_POS_Y + ( objY * CONSTANTS.OBJ_SIZE_Y );
@@ -73,7 +82,7 @@ var GameDraw = ( function () {
         } else if ( objX === 0 ) {
             x = CONSTANTS.BOTTOM_START_POS_X + ( ( 12 - objX ) * CONSTANTS.OBJ_SIZE_X )
                 + middleBoard + outOfGamePosition;
-            y = CONSTANTS.BOTTOM_START_POS_Y - ( objY * CONSTANTS.OBJ_SIZE_Y );
+            y = CONSTANTS.BOTTOM_START_POS_Y;
         }
 
         return {
@@ -122,7 +131,7 @@ var GameDraw = ( function () {
 
 
         imageObjBackground.src = 'Images/wood_background_BlackNWhite_1920x1080.jpg';
-        imageObjBoard.src = 'Images/Board800x600.png';
+        imageObjBoard.src = 'Images/Board800x600.jpg';
     };
 
     function createCircle( x, y, color, isChosen) {
@@ -158,6 +167,7 @@ var GameDraw = ( function () {
             fillRadialGradientStartRadius: 0,
             fillRadialGradientEndRadius: radius,
             fillRadialGradientColorStops: [0, 'gray', 1, color],
+            draggable: false,
         } );
 
         var text = new Kinetic.Text( {
@@ -179,18 +189,32 @@ var GameDraw = ( function () {
     };
 
     function createRectangleListener( x, y ) {
+        var pos,
+            posX,
+            posY,
+            posYTop,
+            posYBottom,
+            height;
 
-        var pos = transformPositionFromBoardDataToBoardCanvas( x, y );
-        var posX = Math.floor( pos.x );
-        var posY = Math.floor( pos.y );
-        var height = x < 13 ? ( -CONSTANTS.OBJ_SIZE_Y ) : CONSTANTS.OBJ_SIZE_Y;
+        pos = transformPositionFromBoardDataToBoardCanvas( x, y );
+        posX = Math.floor( pos.x );
+        posYTop = Math.floor( pos.y );
+        posYBottom = Math.floor( pos.y + CONSTANTS.OBJ_SIZE_Y );
+
+        if ( x > 12 ) {
+            posY = posYTop;
+            height = x === 25 ? 1 : 5;
+        } else {           
+            posY = posYBottom;
+            height = x === 0 ? -1 : -5;
+        } 
 
         var rect = new Kinetic.Rect( {
             x: posX,
             y: posY,
             width: CONSTANTS.OBJ_SIZE_X,
-            height: ( height * 5 ),
-           // fill:'yellow',
+            height: ( CONSTANTS.OBJ_SIZE_Y * height ),
+            //fill:'yellow',
         } );
 
         positionLayer.add( rect );
@@ -202,7 +226,7 @@ var GameDraw = ( function () {
 
             pos = transformPositionFromBoardCanvasToBoardData( rect.getAbsolutePosition().x,
                 rect.getAbsolutePosition().y );
-
+                        
             playGroundLayer.destroyChildren();
 
             GameEngine.update( pos.x );
@@ -216,10 +240,10 @@ var GameDraw = ( function () {
         diceImg.onload = function () {
             var diceImage = new Kinetic.Image( {
                 x: 950,
-                y: 280,
+                y: 240,
                 image: diceImg,
-                width: 80,
-                height: 80,
+                width: 140,
+                height: 140,
                
             } );
 
@@ -229,28 +253,33 @@ var GameDraw = ( function () {
             diceLayer.setZIndex( 20 );
 
             diceImage.addEventListener( 'click', function () {
-                diceImage.opacity(0);
+                fadeOut( diceImage );
+                //GameEngine.rollDices();
+                fadeIn( diceImage );
 
-                diceImage.opacity( 1 );
+                //GameEngine.test();
             } );
         };
 
-        diceImg.src = 'Images/dice2.png';
+        diceImg.src = 'Images/DicesNoBackground.jpg';
     }
 
 
     function initGame( board ) {
+        var x,
+            len;
 
         initBackground();
 
-        //for ( var x = 0, len = board.length; x < len; x += 1 ) {
-        //    if ( x < 13 ) {
-        //        createRectangleListener( x, -1 );
-        //    } else {
-        //        createRectangleListener( x, 0 );
-        //    }
-        //}
-
+        len = board.length;
+        for ( x = 0; x < len; x += 1 ) {
+            if ( x < 13 ) {
+                createRectangleListener( x, 0 );
+            } else {
+                createRectangleListener( x, 0 );
+            }
+        }
+                
         updatePlayGround( board );
         createDicesButton();
 
@@ -283,9 +312,39 @@ var GameDraw = ( function () {
         playGroundLayer.draw();
     }
 
+    function updateDice() {
+        diceLayer.draw();
+    }
+
+
+    var fadeIn = function ( shape ) {
+        var op = shape.getOpacity();
+        op = op + 0.1 >= 1 ? 1 : op + 0.1;
+        shape.setOpacity( op );
+        shape.getLayer().draw();
+        if ( op !== 1 ) {
+            setTimeout( function () {
+                fadeIn( shape );
+            }, 120 );
+        }
+    };
+
+    var fadeOut = function ( shape ) {
+        var op = shape.getOpacity();
+        op = op - 0.1 <= 0.1 ? 0.1 : op - 0.1;
+        shape.setOpacity( op );
+        shape.getLayer().draw();
+        if ( op !== 0.1 ) {
+            setTimeout( function () {
+                fadeOut( shape );
+            }, 120 );
+        }
+    };
+
+
     return {
         initGame: initGame,
         updatePlayGround: updatePlayGround,
-        //renderBoard: renderBoard,
+        updateDice: updateDice,       
     }
 }() );
