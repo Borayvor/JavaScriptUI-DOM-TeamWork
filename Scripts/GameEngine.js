@@ -105,7 +105,6 @@ var GameEngine = ( function () {
     return {
         start: start,
         update: update,
-        rollDices: rollDices,
         test: test,
     };
 }() );
