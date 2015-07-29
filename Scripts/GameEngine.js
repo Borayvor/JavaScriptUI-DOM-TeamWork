@@ -40,19 +40,7 @@ var GameEngine = ( function () {
 
     function updatePlayGround() {
         GameDraw.updatePlayGround(board);
-    }
-
-    function rollDices() {
-
-        if ( firstDiceThrow ) {
-            firstDiceThrow = false;
-            throwFirstDiceToDeterminePlayer();
-        }
-        if ( dices.numbers.length === 0 ) {
-            dices.rollDices();
-        }
-        update();
-    }
+    }    
 
     function movePiece( from, to ) {
 
