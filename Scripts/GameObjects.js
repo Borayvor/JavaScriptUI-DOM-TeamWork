@@ -58,10 +58,7 @@ var GameObjects = ( function () {
             addPiecesToBoard( self, 'white', 2, 1 );
             addPiecesToBoard( self, 'white', 5, 12 );
             addPiecesToBoard( self, 'white', 3, 17 );
-            addPiecesToBoard( self, 'white', 5, 19 );
-
-            //// test
-            addPiecesToBoard( self, 'white', 2, 0 );
+            addPiecesToBoard( self, 'white', 5, 19 );           
         }
 
         function putPlayerTwoPieces( self ) {
@@ -69,18 +66,18 @@ var GameObjects = ( function () {
             addPiecesToBoard( self, 'black', 5, 13 );
             addPiecesToBoard( self, 'black', 3, 8 );
             addPiecesToBoard( self, 'black', 5, 6 );
-
-            //// test
-            addPiecesToBoard( self, 'black', 7, 25 );
-        }       
+        }               
 
         Object.defineProperty( board, 'init', {
-            value: function () {
+            value: function (players) {
                 var self = this;
+
+                this.players = players;
+
                 putBoardFields( self );
                 putPlayerOnePieces( self );
                 putPlayerTwoPieces( self );
-                //setAvailabilityOfFields( self );
+                
                 return this;
             }
         } );
@@ -88,13 +85,23 @@ var GameObjects = ( function () {
     
         Object.defineProperty( board, 'movePiece', {
             value: function ( fromBoardField, toBoardField ) {
-                var piece;
+                var piece,
+                    currentPlayer;
 
                 if ( this[fromBoardField].pieces.length === 0 ) {
 
                     ////test
                     alert( 'No Pieces at position ' + fromBoardField );
-                    return;                    
+                    return this;                    
+                }
+
+                currentPlayer = this.players[0].isOnTurn === true ? this.players[0] : this.players[1];
+
+                if ( currentPlayer.color !== this[fromBoardField].pieces[0].color ) {
+                
+                    ////test
+                    alert( 'Can not move from position ' + fromBoardField );
+                    return this;
                 }
 
                 if ( this[toBoardField].pieces.length > 1
@@ -102,7 +109,7 @@ var GameObjects = ( function () {
 
                     ////test
                     alert( 'Can not move to position ' + toBoardField );
-                    return;                    
+                    return this;                    
                 }
                 
                 piece = this[fromBoardField].pieces.pop();
@@ -129,6 +136,8 @@ var GameObjects = ( function () {
                 this.name = name;
                 this.color = color;
                 this.isOnTurn = false;
+                this.canMoveOutPiece = false;
+                this.canMoveInPiece = false;
 
                 return this;
             }
@@ -158,6 +167,24 @@ var GameObjects = ( function () {
             },
             set: function ( value ) {
                 this._isOnTurn = value;
+            }
+        } );
+
+        Object.defineProperty( player, 'canMoveOutPiece', {
+            get: function () {
+                return this._canMoveOutPiece;
+            },
+            set: function ( value ) {
+                this._canMoveOutPiece = value;
+            }
+        } );
+
+        Object.defineProperty( player, 'canMoveInPiece', {
+            get: function () {
+                return this._canMoveInPiece;
+            },
+            set: function ( value ) {
+                this._canMoveInPiece = value;
             }
         } );
 

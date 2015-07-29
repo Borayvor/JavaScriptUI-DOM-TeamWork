@@ -16,10 +16,11 @@ var GameEngine = ( function () {
 
         var players = [];
         players.push(Object.create(GameObjects.Player).init('First', 'white'));
-        players.push(Object.create(GameObjects.Player).init('Second', 'black'));
+        players.push( Object.create( GameObjects.Player ).init( 'Second', 'black' ) );
 
-        //TODO check 
-        board = GameObjects.Board.init();
+        players[0].isOnTurn = true;
+                
+        board = GameObjects.Board.init( players );
 
         // dices.rollDices() ; dices.usedNumber(number) ; dices.clearNumbers()
         dices = GameObjects.Dices.init();
@@ -40,15 +41,14 @@ var GameEngine = ( function () {
 
     function updatePlayGround() {
         GameDraw.updatePlayGround(board);
-    }    
-
+    }
+        
     function movePiece( from, to ) {
 
         board.movePiece( from, to );
         fromToPos = [];
         updatePlayGround();
     }
-
 
     function update( numberOfBoardField ) {
         
