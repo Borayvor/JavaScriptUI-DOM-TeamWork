@@ -3,6 +3,7 @@
 
 var GameEngine = ( function () {
     var board;
+    var fromToPos = [];
 
     function start() {
         var x,
@@ -41,8 +42,38 @@ var GameEngine = ( function () {
         GameDraw.updatePlayGround(board);
     }
 
+    function rollDices() {
 
-    function update(numberOfBoardField) {
+        if ( firstDiceThrow ) {
+            firstDiceThrow = false;
+            throwFirstDiceToDeterminePlayer();
+        }
+        if ( dices.numbers.length === 0 ) {
+            dices.rollDices();
+        }
+        update();
+    }
+
+    function movePiece( from, to ) {
+
+        board.movePiece( from, to );
+        fromToPos = [];
+        updatePlayGround();
+    }
+
+
+    function update( numberOfBoardField ) {
+        
+        if ( fromToPos.length === 0) {
+            fromToPos.push( numberOfBoardField );
+            return;
+        } else if ( fromToPos.length < 2 ) {
+            fromToPos.push( numberOfBoardField );
+        } 
+                
+        movePiece( fromToPos[0], fromToPos[1] );
+
+        
 
         // currentPlayer = GetCurrentPlayer - depending on player.isOnTurn or isFirstPlayerOnTurn
 
@@ -61,36 +92,32 @@ var GameEngine = ( function () {
         // if current player has no pieces on the board -> He wins.
 
         // if (playerMoves === allowedMoves) -> change player, hasThrownDice = false
-        function addListenersToPossibleGameFields(gameFields) {
-            var i,
-                len;
-            for (i = 0, len = gameFields.length; i < len; i += 1) {
-                var currentField = gameFields[i];
-                currentField.addEventListener('click', selectAndPaintLastPiece(currentField));
-            }
-        }
 
-        function selectAndPaintLastPiece(gameField) {
-            var len = gameField.pieces.length;
-            gameField.pieces[len - 1].isChosen = true;
-        }
+
+       
+
+        //function selectAndPaintLastPiece(gameField) {
+        //    var len = gameField.pieces.length;
+        //    gameField.pieces[len - 1].isChosen = true;
+        //}
     }
 
-
+    
     /////////////
-    function test(x, y) {
-        //alert( x + ' ' + y );
 
-        board.movePiece(6, 7);
-
-        updatePlayGround();
+    function test(x) {
+        
+        
     }
 
     /////////////
+
+    
 
     return {
         start: start,
         update: update,
+        rollDices: rollDices,
         test: test,
     };
 }() );

@@ -188,6 +188,27 @@ var GameDraw = ( function () {
         }
     };
 
+    function createCirclePositionForOutGamePieces( x, y, color ) {
+        var radius,
+           pos,
+           posX,
+           posY;
+
+        radius = CONSTANTS.CIRCLE_RADIUS;
+        pos = transformPositionFromBoardDataToBoardCanvas( x, y );
+        posX = Math.floor( pos.x + ( CONSTANTS.OBJ_SIZE_X / 2 ) );
+        posY = Math.floor( pos.y + ( CONSTANTS.OBJ_SIZE_Y / 2 ) );
+
+        var circle = new Kinetic.Circle( {
+            x: posX,
+            y: posY,
+            radius: radius,
+            stroke: color,
+        } );
+
+        backgroundLayer.add( circle );
+    }
+
     function createRectangleListener( x, y ) {
         var pos,
             posX,
@@ -225,8 +246,8 @@ var GameDraw = ( function () {
                 pos;
 
             pos = transformPositionFromBoardCanvasToBoardData( rect.getAbsolutePosition().x,
-                rect.getAbsolutePosition().y );
-                        
+                rect.getAbsolutePosition().y );                        
+
             playGroundLayer.destroyChildren();
 
             GameEngine.update( pos.x );
@@ -279,6 +300,9 @@ var GameDraw = ( function () {
                 createRectangleListener( x, 0 );
             }
         }
+
+        createCirclePositionForOutGamePieces( 25, 0, 'yellow' );
+        createCirclePositionForOutGamePieces(0, 0, 'yellow');
                 
         updatePlayGround( board );
         createDicesButton();
@@ -301,7 +325,7 @@ var GameDraw = ( function () {
         lengthBoard = board.length;
 
         for ( x = 0; x < lengthBoard; x += 1 ) {
-            lengthField = board[x].pieces.length;
+            lengthField = board[x].pieces.length;                        
 
             for ( y = 0; y < lengthField; y += 1 ) {
                 currentPiece = board[x].pieces[y];

@@ -1,3 +1,5 @@
+
+
 var GameObjects = ( function () {
     var Board,
         Piece,
@@ -57,6 +59,9 @@ var GameObjects = ( function () {
             addPiecesToBoard( self, 'white', 5, 12 );
             addPiecesToBoard( self, 'white', 3, 17 );
             addPiecesToBoard( self, 'white', 5, 19 );
+
+            //// test
+            addPiecesToBoard( self, 'white', 2, 0 );
         }
 
         function putPlayerTwoPieces( self ) {
@@ -65,23 +70,23 @@ var GameObjects = ( function () {
             addPiecesToBoard( self, 'black', 3, 8 );
             addPiecesToBoard( self, 'black', 5, 6 );
 
+            //// test
+            addPiecesToBoard( self, 'black', 7, 25 );
         }
 
-        function setAvailabilityOfFields( board ) {
-            for ( i = 1; i < board.length - 1; i += 1 ) {
-                board[i].availableForBlack === true;
-                board[i].availableForWhite === true;
+        //function setAvailabilityOfFields( board ) {
+        //    for ( i = 1; i < board.length - 1; i += 1 ) {
+        //        board[i].availableForBlack === true;
+        //        board[i].availableForWhite === true;
 
-                if ( board[i].pieces.length > 1 && board[i].pieces[1].color === 'white' ) {
-                    board[i].availableForBlack = false;
-                }
-                if ( board[i].pieces.length > 1 && board[i].pieces[1].color === 'black' ) {
-                    board[i].availableForWhite = false;
-                }
-
-                console.log( board[i] )
-            }
-        }
+        //        if ( board[i].pieces.length > 1 && board[i].pieces[1].color === 'white' ) {
+        //            board[i].availableForBlack = false;
+        //        }
+        //        if ( board[i].pieces.length > 1 && board[i].pieces[1].color === 'black' ) {
+        //            board[i].availableForWhite = false;
+        //        }
+        //    }
+        //}
 
 
         Object.defineProperty( board, 'init', {
@@ -90,16 +95,34 @@ var GameObjects = ( function () {
                 putBoardFields( self );
                 putPlayerOnePieces( self );
                 putPlayerTwoPieces( self );
-                setAvailabilityOfFields( self );
+                //setAvailabilityOfFields( self );
                 return this;
             }
         } );
 
-        // Called from update when moving. Ex.: gameBoard.movePiece({color:white}, 2, 5);
+    
         Object.defineProperty( board, 'movePiece', {
             value: function ( fromBoardField, toBoardField ) {
-                var piece = this[fromBoardField].pieces.pop();
+                var piece;
+
+                if ( this[fromBoardField].pieces.length === 0 ) {
+
+                    ////test
+                    alert( 'No Pieces at position ' + fromBoardField );
+                    return;                    
+                }
+
+                if ( this[toBoardField].pieces.length > 1
+                    && this[toBoardField].pieces[0].color !== this[fromBoardField].pieces[0].color ) {
+
+                    ////test
+                    alert( 'Can not move to position ' + toBoardField );
+                    return;                    
+                }
+                
+                piece = this[fromBoardField].pieces.pop();
                 this[toBoardField].pieces.push( piece );
+
                 return this;
             }
         } );
@@ -164,6 +187,7 @@ var GameObjects = ( function () {
             value: function ( color ) {
                 this.color = color;
                 this.isChosen = false;
+
                 return this;
             }
         } );
@@ -247,7 +271,8 @@ var GameObjects = ( function () {
             }
         } );
 
-        Object.defineProperty( dices, 'clearNumbers', { // in case the player doesnt have any moves with those Dice numbers
+        // in case the player doesnt have any moves with those Dice numbers
+        Object.defineProperty( dices, 'clearNumbers', { 
             value: function () {
                 this.numbers.splice( 0, this.numbers.length );
             }
