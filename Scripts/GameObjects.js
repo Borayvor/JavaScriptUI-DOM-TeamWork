@@ -29,7 +29,7 @@ var GameObjects = ( function () {
 
     
     Board = ( function () {
-        var board = Object.create( [] );
+        var board = Object.create( {} );
 
         function putBoardFields( self ) {
             var i,
@@ -97,52 +97,6 @@ var GameObjects = ( function () {
 
         Object.defineProperty( board, 'movePiece', {
             value: function ( fromBoardField, toBoardField ) {
-                var piece,
-                    currentPlayer,
-                    boardLength = CONSTANTS.BOARD_LENGTH;
-
-                if ( this.fields[fromBoardField].pieces.length === 0 ) {
-
-                    ////test
-                    alert( 'No Pieces at position ' + fromBoardField );
-                    return this;
-                }
-
-                currentPlayer = this.players[0].isOnTurn === true ? this.players[0] : this.players[1];
-
-                if ( currentPlayer.color !== this.fields[fromBoardField].pieces[0].color ) {
-
-                    ////test
-                    alert( 'Can not move from position ' + fromBoardField );
-                    return this;
-                }
-
-                if ( this.fields[toBoardField].pieces.length > 1
-                    && this.fields[toBoardField].pieces[0].color !== this.fields[fromBoardField].pieces[0].color ) {
-
-                    ////test
-                    alert( 'Can not move to position ' + toBoardField );
-
-                    return this;
-                }
-
-                if ( currentPlayer.canMoveOutPiece === false ) {
-                    if ( currentPlayer.color === 'white' ) {
-                        this.fields[boardLength - 1].isAvailableForWhite = false;
-                    } else {
-                        this.fields[0].isAvailableForBlack = false;
-                    }
-                }
-
-                if ( ( this.fields[toBoardField].isAvailableForBlack === false
-                    && this.fields[fromBoardField].pieces[0].color === 'black' )
-                    || ( this.fields[toBoardField].isAvailableForWhite === false
-                    && this.fields[fromBoardField].pieces[0].color === 'white' ) ) {
-
-                    ////test
-                    alert( 'Can not move to position ' + toBoardField );
-                    return this;
-                }
 
                 piece = this.fields[fromBoardField].pieces.pop();
                 this.fields[toBoardField].pieces.push( piece );
@@ -169,6 +123,7 @@ var GameObjects = ( function () {
                 this.name = name;
                 this.color = color;
                 this.isOnTurn = false;
+                this.canPlayWithPieces = false;
                 this.canMoveOutPiece = false;
                 this.canMoveInPiece = false;
 

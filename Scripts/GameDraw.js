@@ -334,56 +334,55 @@ var GameDraw = ( function () {
 
             GameEngine.rollDices();
 
-            displayRollingDices();
             diceOne.src = 'Images/dieWhite' + board.dices.all[0].number + '.png';
             diceTwo.src = 'Images/dieWhite' + board.dices.all[1].number + '.png';
-        } );
+        } );        
+    }
 
-        function displayRollingDices() {
-            document.getElementById( 'dices' ).style.display = 'inline';
+    function animateRollingDices() {
+        document.getElementById( 'dices' ).style.display = 'inline';
 
-            setTimeout( function () {
-                $( '#dice1' ).attr( 'src', 'Images/dieWhite1.png' );
-            }, 50 );
-            setTimeout( function () {
-                $( '#dice1' ).attr( 'src', 'Images/dieWhite2.png' );
-            }, 150 );
-            setTimeout( function () {
-                $( '#dice1' ).attr( 'src', 'Images/dieWhite3.png' );
-            }, 250 );
-            setTimeout( function () {
-                $( '#dice1' ).attr( 'src', 'Images/dieWhite4.png' );
-            }, 350 );
-            setTimeout( function () {
-                $( '#dice1' ).attr( 'src', 'Images/dieWhite5.png' );
-            }, 450 );
-            setTimeout( function () {
-                $( '#dice1' ).attr( 'src', 'Images/dieWhite6.png' );
-            }, 550 );
+        setTimeout( function () {
+            $( '#dice1' ).attr( 'src', 'Images/dieWhite1.png' );
+        }, 50 );
+        setTimeout( function () {
+            $( '#dice1' ).attr( 'src', 'Images/dieWhite2.png' );
+        }, 150 );
+        setTimeout( function () {
+            $( '#dice1' ).attr( 'src', 'Images/dieWhite3.png' );
+        }, 250 );
+        setTimeout( function () {
+            $( '#dice1' ).attr( 'src', 'Images/dieWhite4.png' );
+        }, 350 );
+        setTimeout( function () {
+            $( '#dice1' ).attr( 'src', 'Images/dieWhite5.png' );
+        }, 450 );
+        setTimeout( function () {
+            $( '#dice1' ).attr( 'src', 'Images/dieWhite6.png' );
+        }, 550 );
 
-            setTimeout( function () {
-                $( '#dice2' ).attr( 'src', 'Images/dieWhite1.png' );
-            }, 100 );
-            setTimeout( function () {
-                $( '#dice2' ).attr( 'src', 'Images/dieWhite2.png' );
-            }, 220 );
-            setTimeout( function () {
-                $( '#dice2' ).attr( 'src', 'Images/dieWhite3.png' );
-            }, 340 );
-            setTimeout( function () {
-                $( '#dice2' ).attr( 'src', 'Images/dieWhite4.png' );
-            }, 460 );
-            setTimeout( function () {
-                $( '#dice2' ).attr( 'src', 'Images/dieWhite5.png' );
-            }, 580 );
-            setTimeout( function () {
-                $( '#dice2' ).attr( 'src', 'Images/dieWhite6.png' );
-            }, 700 );
+        setTimeout( function () {
+            $( '#dice2' ).attr( 'src', 'Images/dieWhite1.png' );
+        }, 100 );
+        setTimeout( function () {
+            $( '#dice2' ).attr( 'src', 'Images/dieWhite2.png' );
+        }, 220 );
+        setTimeout( function () {
+            $( '#dice2' ).attr( 'src', 'Images/dieWhite3.png' );
+        }, 340 );
+        setTimeout( function () {
+            $( '#dice2' ).attr( 'src', 'Images/dieWhite4.png' );
+        }, 460 );
+        setTimeout( function () {
+            $( '#dice2' ).attr( 'src', 'Images/dieWhite5.png' );
+        }, 580 );
+        setTimeout( function () {
+            $( '#dice2' ).attr( 'src', 'Images/dieWhite6.png' );
+        }, 700 );
 
-            setTimeout( function () {
-                document.getElementById( 'dices' ).style.display = 'none';
-            }, 710 )
-        }
+        setTimeout( function () {
+            document.getElementById( 'dices' ).style.display = 'none';
+        }, 710 )
     }
 
     function initGame( board ) {
@@ -438,7 +437,12 @@ var GameDraw = ( function () {
         playGroundLayer.draw();
     }
         
-    function updatePlayerNames() {
+    function updatePlayerNames( board ) {
+        playersNamesLayer.destroyChildren();
+
+        createPlayersNames( board.players[0] );
+        createPlayersNames( board.players[1] );
+
         playersNamesLayer.draw();
     }
 
@@ -471,5 +475,6 @@ var GameDraw = ( function () {
         initGame: initGame,
         updatePlayGround: updatePlayGround,
         updatePlayerNames: updatePlayerNames,
+        animateRollingDices: animateRollingDices,
     }
 }() );
