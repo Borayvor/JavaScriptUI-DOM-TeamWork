@@ -6,9 +6,9 @@ var GameObjects = ( function () {
         Player,
         Dice,
         BoardField,
-        boardLength = 26,
         CONSTANTS = {
-            DICE_DEFAULT_NUMBER: 6
+            BOARD_LENGTH: 26,
+            DICE_DEFAULT_NUMBER: 6,
         };
 
     // pole ot igralnoto pole
@@ -17,9 +17,9 @@ var GameObjects = ( function () {
 
         Object.defineProperty( boardField, 'init', {
             value: function () {
-                this.availableForBlack = true,
-                    this.availableForWhite = true,
-                    this.pieces = [];
+                this.availableForBlack = true;
+                this.availableForWhite = true;
+                this.pieces = [];
 
                 return this;
             }
@@ -34,23 +34,30 @@ var GameObjects = ( function () {
 
         // Inner helper functions.
         function putBoardFields( self ) {
-            var i;
+            var i,
+                boardLength = CONSTANTS.BOARD_LENGTH;
 
             for ( i = 0; i < boardLength; i += 1 ) {
-                self.push( Object.create( BoardField ).init() );
+                self.fields.push( Object.create( BoardField ).init() );
             }
 
-            self[0].availableForBlack = false;
-            self[boardLength - 1].availableForWhite = false;
+            self.fields[boardLength - 1].isAvailableForBlack = false;
+            self.fields[0].isAvailableForWhite = false;
 
         }
 
         function addPiecesToBoard( self, color, numberOfPieces, position ) {
-            var pieceNumber, currentPiece;
+            var pieceNumber,
+               currentPiece,
+               currentPlayer,
+               currentPlayerPiece;
+
+            currentPlayer = self.players[0].color === color ? self.players[0] : self.players[1];
 
             for ( pieceNumber = 0; pieceNumber < numberOfPieces; pieceNumber += 1 ) {
-                currentPiece = Object.create( Piece ).init( color );
-                self[position].pieces.push( currentPiece );
+
+                currentPlayerPiece = currentPlayer.pieces.pop();
+                self.fields[position].pieces.push( currentPlayerPiece );
             }
         }
 
@@ -58,7 +65,7 @@ var GameObjects = ( function () {
             addPiecesToBoard( self, 'white', 2, 1 );
             addPiecesToBoard( self, 'white', 5, 12 );
             addPiecesToBoard( self, 'white', 3, 17 );
-            addPiecesToBoard( self, 'white', 5, 19 );           
+            addPiecesToBoard( self, 'white', 5, 19 );
         }
 
         function putPlayerTwoPieces( self ) {
@@ -66,54 +73,78 @@ var GameObjects = ( function () {
             addPiecesToBoard( self, 'black', 5, 13 );
             addPiecesToBoard( self, 'black', 3, 8 );
             addPiecesToBoard( self, 'black', 5, 6 );
-        }               
+        }
 
         Object.defineProperty( board, 'init', {
-            value: function (players) {
+            value: function ( players ) {
                 var self = this;
 
-                this.players = players;
+                this.players = [];
+                this.fields = [];
+
+                this.players.push( players[0] );
+                this.players.push( players[1] );
 
                 putBoardFields( self );
                 putPlayerOnePieces( self );
                 putPlayerTwoPieces( self );
-                
-                return this;
+
+                return self;
             }
         } );
 
-    
+
         Object.defineProperty( board, 'movePiece', {
             value: function ( fromBoardField, toBoardField ) {
                 var piece,
-                    currentPlayer;
+                    currentPlayer,
+                    boardLength = CONSTANTS.BOARD_LENGTH;
 
-                if ( this[fromBoardField].pieces.length === 0 ) {
+                if ( this.fields[fromBoardField].pieces.length === 0 ) {
 
                     ////test
                     alert( 'No Pieces at position ' + fromBoardField );
-                    return this;                    
+                    return this;
                 }
 
                 currentPlayer = this.players[0].isOnTurn === true ? this.players[0] : this.players[1];
 
-                if ( currentPlayer.color !== this[fromBoardField].pieces[0].color ) {
-                
+                if ( currentPlayer.color !== this.fields[fromBoardField].pieces[0].color ) {
+
                     ////test
                     alert( 'Can not move from position ' + fromBoardField );
                     return this;
                 }
 
-                if ( this[toBoardField].pieces.length > 1
-                    && this[toBoardField].pieces[0].color !== this[fromBoardField].pieces[0].color ) {
+                if ( this.fields[toBoardField].pieces.length > 1
+                    && this.fields[toBoardField].pieces[0].color !== this.fields[fromBoardField].pieces[0].color ) {
 
                     ////test
                     alert( 'Can not move to position ' + toBoardField );
-                    return this;                    
+
+                    return this;
                 }
-                
-                piece = this[fromBoardField].pieces.pop();
-                this[toBoardField].pieces.push( piece );
+
+                if ( currentPlayer.canMoveOutPiece === false ) {
+                    if ( currentPlayer.color === 'white' ) {
+                        this.fields[boardLength - 1].isAvailableForWhite = false;
+                    } else {
+                        this.fields[0].isAvailableForBlack = false;
+                    }
+                }
+
+                if ( ( this.fields[toBoardField].isAvailableForBlack === false
+                    && this.fields[fromBoardField].pieces[0].color === 'black' )
+                    || ( this.fields[toBoardField].isAvailableForWhite === false
+                    && this.fields[fromBoardField].pieces[0].color === 'white' ) ) {
+
+                    ////test
+                    alert( 'Can not move to position ' + toBoardField );
+                    return this;
+                }
+
+                piece = this.fields[fromBoardField].pieces.pop();
+                this.fields[toBoardField].pieces.push( piece );
 
                 return this;
             }
@@ -125,19 +156,26 @@ var GameObjects = ( function () {
     // igrach
     Player = ( function () {
         var player = Object.create( {} );
-        //var CONSTANTS_PLAYER = {
-        //    TOTAL_NUMBER_OF_PIECES: 15,
-        //    INIT_X: 0,
-        //    INIT_Y: 0
-        //};
+        var CONSTANTS_PLAYER = {
+            TOTAL_NUMBER_OF_PIECES: 15,
+        };
 
         Object.defineProperty( player, 'init', {
             value: function ( name, color ) {
+                var i,
+                    length = CONSTANTS_PLAYER.TOTAL_NUMBER_OF_PIECES;
+
                 this.name = name;
                 this.color = color;
                 this.isOnTurn = false;
                 this.canMoveOutPiece = false;
                 this.canMoveInPiece = false;
+
+                this.pieces = [];
+
+                for ( i = 0; i < length; i += 1 ) {
+                    this.pieces.push( Object.create( Piece ).init( this.color ) );
+                }
 
                 return this;
             }
@@ -269,9 +307,9 @@ var GameObjects = ( function () {
             value: function () {
                 this.numbers.push( firstDice.rollDice() );
                 this.numbers.push( secondDice.rollDice() );
-                if(this.numbers[0] === this.numbers[1]) {
-                    this.numbers.push(this.numbers[0]);
-                    this.numbers.push(this.numbers[0]);
+                if ( this.numbers[0] === this.numbers[1] ) {
+                    this.numbers.push( this.numbers[0] );
+                    this.numbers.push( this.numbers[0] );
                 }
             }
         } );
@@ -284,7 +322,7 @@ var GameObjects = ( function () {
         } );
 
         // in case the player doesnt have any moves with those Dice numbers
-        Object.defineProperty( dices, 'clearNumbers', { 
+        Object.defineProperty( dices, 'clearNumbers', {
             value: function () {
                 this.numbers.splice( 0, this.numbers.length );
             }

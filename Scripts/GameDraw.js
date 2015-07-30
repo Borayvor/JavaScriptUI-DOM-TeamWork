@@ -29,6 +29,7 @@ var GameDraw = ( function () {
     playGroundLayer = new Kinetic.Layer();
     positionLayer = new Kinetic.Layer();
     diceLayer = new Kinetic.Layer();
+    playersNamesLayer = new Kinetic.Layer();
 
     width = stage.getWidth();
     height = stage.getHeight();
@@ -89,6 +90,44 @@ var GameDraw = ( function () {
             x: x,
             y: y,
         }
+    };
+
+    function createPlayersNames( player ) {
+        var posX = 950,
+            posY,
+            strokeColor,
+            fontSize;
+
+        if ( player.color === 'white' ) {
+            posY = 100;
+            strokeColor = 'black';
+        } else {
+            posY = 470;
+            strokeColor = 'white';
+        }
+
+        if ( player.isOnTurn ) {
+            fontSize = 56;
+        } else {
+            fontSize = 30;
+        }
+
+        var text = new Kinetic.Text( {
+            x: posX,
+            y: posY,
+            text: player.name,
+            fontSize: fontSize,
+            fontStyle: 'bold',
+            fontFamily: 'fantasy',
+            width: 400,
+            fill: player.color,
+            stroke: strokeColor,
+            align: 'left',
+            shadowOffsetX: 10,
+            shadowOffsetY: 10,
+        } );
+
+        playersNamesLayer.add( text );
     };
 
     function initBackground() {
@@ -292,7 +331,7 @@ var GameDraw = ( function () {
 
         initBackground();
 
-        len = board.length;
+        len = board.fields.length;
         for ( x = 0; x < len; x += 1 ) {
             if ( x < 13 ) {
                 createRectangleListener( x, 0 );
@@ -302,11 +341,15 @@ var GameDraw = ( function () {
         }
 
         createCirclePositionForOutGamePieces( 25, 0, 'yellow' );
-        createCirclePositionForOutGamePieces(0, 0, 'yellow');
+        createCirclePositionForOutGamePieces( 0, 0, 'yellow' );
+
+        createPlayersNames( board.players[0] );
+        createPlayersNames( board.players[1] );
                 
         updatePlayGround( board );
         createDicesButton();
 
+        stage.add( playersNamesLayer );
         stage.add( positionLayer );
         stage.add( playGroundLayer );
 
@@ -322,14 +365,14 @@ var GameDraw = ( function () {
             lengthField,
             currentPiece;
 
-        lengthBoard = board.length;
+        lengthBoard = board.fields.length;
 
         for ( x = 0; x < lengthBoard; x += 1 ) {
-            lengthField = board[x].pieces.length;                        
+            lengthField = board.fields[x].pieces.length;
 
             for ( y = 0; y < lengthField; y += 1 ) {
-                currentPiece = board[x].pieces[y];
-                createCircle( x, y, currentPiece.color, currentPiece.isChosen);
+                currentPiece = board.fields[x].pieces[y];
+                createCircle( x, y, currentPiece.color, currentPiece.isChosen );
             }
         }
 
@@ -340,6 +383,9 @@ var GameDraw = ( function () {
         diceLayer.draw();
     }
 
+    function updatePlayerNames() {
+        playersNamesLayer.draw();
+    }
 
     var fadeIn = function ( shape ) {
         var op = shape.getOpacity();
@@ -369,6 +415,7 @@ var GameDraw = ( function () {
     return {
         initGame: initGame,
         updatePlayGround: updatePlayGround,
-        updateDice: updateDice,       
+        updateDice: updateDice,
+        updatePlayerNames: updatePlayerNames,
     }
 }() );

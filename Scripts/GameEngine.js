@@ -1,25 +1,26 @@
 ﻿/// <reference path="GameDraw.js" />
 /// <reference path="GameObjects.js" />
+/// <reference path="MenuScripts.js" />
 
 var GameEngine = ( function () {
-    var board;
-    var fromToPos = [];
+    var board,
+        fromToPos = [];       
 
-    function start() {
+    function start( firstPlayerName, secondPlayerName ) {
         var x,
             y,
             color,
             i,
             j,
             lengthBoard,
-            lengthField;
-
+            lengthField;                   
+       
         var players = [];
-        players.push(Object.create(GameObjects.Player).init('First', 'white'));
-        players.push( Object.create( GameObjects.Player ).init( 'Second', 'black' ) );
-
+        players.push( Object.create( GameObjects.Player ).init( firstPlayerName, 'white' ) );
+        players.push( Object.create( GameObjects.Player ).init( secondPlayerName, 'black' ) );
+                      
         players[0].isOnTurn = true;
-                
+
         board = GameObjects.Board.init( players );
 
         // dices.rollDices() ; dices.usedNumber(number) ; dices.clearNumbers()
@@ -36,13 +37,13 @@ var GameEngine = ( function () {
         //console.log(dices.numbers);
         // END OF TEST;
 
-        GameDraw.initGame(board);
+        GameDraw.initGame( board );
     }
 
     function updatePlayGround() {
-        GameDraw.updatePlayGround(board);
+        GameDraw.updatePlayGround( board );
     }
-        
+
     function movePiece( from, to ) {
 
         board.movePiece( from, to );
@@ -51,17 +52,17 @@ var GameEngine = ( function () {
     }
 
     function update( numberOfBoardField ) {
-        
-        if ( fromToPos.length === 0) {
+
+        if ( fromToPos.length === 0 ) {
             fromToPos.push( numberOfBoardField );
             return;
         } else if ( fromToPos.length < 2 ) {
             fromToPos.push( numberOfBoardField );
-        } 
-                
+        }
+
         movePiece( fromToPos[0], fromToPos[1] );
 
-        
+
 
         // currentPlayer = GetCurrentPlayer - depending on player.isOnTurn or isFirstPlayerOnTurn
 
@@ -82,7 +83,7 @@ var GameEngine = ( function () {
         // if (playerMoves === allowedMoves) -> change player, hasThrownDice = false
 
 
-       
+
 
         //function selectAndPaintLastPiece(gameField) {
         //    var len = gameField.pieces.length;
@@ -90,22 +91,22 @@ var GameEngine = ( function () {
         //}
     }
 
-    
+
     /////////////
 
-    function test(x) {
-        
-        
+    function test( x ) {
+
+
     }
 
     /////////////
 
-    
+   
 
     return {
         start: start,
         update: update,
-        test: test,
+        test: test,       
     };
 }() );
 

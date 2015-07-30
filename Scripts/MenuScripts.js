@@ -1,4 +1,7 @@
+/// <reference path="GameEngine.js" />
+
 var svgLogic = ( function () {
+
 var mustSlowCircles = false,
     gameExited = false,
     playButton = false,
@@ -194,7 +197,8 @@ function toLoad() {
             $('#secondPlayerText').animate({opacity: "0"}, 200);
             $('#proceedButton').animate({opacity: "0"}, 200);
             $('input[type=text]').animate({opacity: 0},200);
-            setTimeout(boardScreen,210);
+            setTimeout( boardScreen, 210 );
+            GameEngine.start( playerOneName, playerTwoName );
             return;
         }
         requestAnimationFrame(waitForName);
@@ -475,12 +479,13 @@ function setName() {
     if (playerOneName) {
         name = $('#secondPlayer-name').val();
         playerTwoName = name;
-        namesAreSet = true;
+        namesAreSet = true;       
     } else {
         name = $('#firstPlayer-name').val();
         playerOneName = name;
-        playerOneNameSet = true;
+        playerOneNameSet = true;       
     }
+        
 }
 
 function stopInterval(interval) {
@@ -492,6 +497,6 @@ return {
     exitGame: exitGame,
     getHelp: getHelp,
     play: play,
-    toLoad: toLoad,
+    toLoad: toLoad,  
 }
 }() )
