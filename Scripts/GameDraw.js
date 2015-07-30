@@ -33,10 +33,10 @@ var GameDraw = ( function () {
 
     width = stage.getWidth();
     height = stage.getHeight();
-    
-     function transformPositionFromBoardCanvasToBoardData( objX, objY ) {
+
+    function transformPositionFromBoardCanvasToBoardData( objX, objY ) {
         var x,
-            y;            
+            y;
 
         if ( objY < 310 ) {
             if ( objX < 810 ) {
@@ -61,7 +61,7 @@ var GameDraw = ( function () {
         var x,
             y,
             middleBoard = 0;
-              
+
         if ( objX === 0 || objX === 25 ) {
             outOfGamePosition = 50;
         }
@@ -173,7 +173,7 @@ var GameDraw = ( function () {
         imageObjBoard.src = 'Images/Board800x600.jpg';
     };
 
-    function createCircle( x, y, color, isChosen) {
+    function createCircle( x, y, color, isChosen ) {
         var radius,
             pos,
             posX,
@@ -264,10 +264,10 @@ var GameDraw = ( function () {
         if ( x > 12 ) {
             posY = posYTop;
             height = x === 25 ? 1 : 5;
-        } else {           
+        } else {
             posY = posYBottom;
             height = x === 0 ? -1 : -5;
-        } 
+        }
 
         var rect = new Kinetic.Rect( {
             x: posX,
@@ -285,59 +285,119 @@ var GameDraw = ( function () {
                 pos;
 
             pos = transformPositionFromBoardCanvasToBoardData( rect.getAbsolutePosition().x,
-                rect.getAbsolutePosition().y );                        
+                rect.getAbsolutePosition().y );
 
             playGroundLayer.destroyChildren();
 
             GameEngine.update( pos.x );
         } );
     };
-    
-    ///Dice
-    function createDicesButton() {
-        var diceImg = new Image();
 
-        diceImg.onload = function () {
+    function createDicesButton( board ) {
+        var diceOne = new Image(),
+            diceTwo = new Image();
+
+        diceOne.onload = function () {
             var diceImage = new Kinetic.Image( {
                 x: 950,
-                y: 240,
-                image: diceImg,
-                width: 140,
-                height: 140,
-               
+                y: 280,
+                image: diceOne,
+                width: 64,
+                height: 64,
+                shadowOffsetX: 10,
+                shadowOffsetY: 10
             } );
 
             diceLayer.add( diceImage );
-
             stage.add( diceLayer );
-            diceLayer.setZIndex( 20 );
-
-            diceImage.addEventListener( 'click', function () {
-                fadeOut( diceImage );
-                //GameEngine.rollDices();
-                fadeIn( diceImage );
-
-                //GameEngine.test();
-            } );
         };
 
-        diceImg.src = 'Images/DicesNoBackground.jpg';
-    }
+        diceTwo.onload = function () {
+            var diceImage = new Kinetic.Image( {
+                x: 1024,
+                y: 280,
+                image: diceTwo,
+                width: 64,
+                height: 64,
+                shadowOffsetX: 10,
+                shadowOffsetY: 10
+            } );
 
+            diceLayer.add( diceImage );
+            stage.add( diceLayer );
+        };
+
+        diceOne.src = 'Images/dieWhite' + board.dices.all[0].number + '.png';
+        diceTwo.src = 'Images/dieWhite' + board.dices.all[1].number + '.png';
+
+        diceLayer.addEventListener( 'click', function () {
+
+            GameEngine.rollDices();
+
+            displayRollingDices();
+            diceOne.src = 'Images/dieWhite' + board.dices.all[0].number + '.png';
+            diceTwo.src = 'Images/dieWhite' + board.dices.all[1].number + '.png';
+        } );
+
+        function displayRollingDices() {
+            document.getElementById( 'dices' ).style.display = 'inline';
+
+            setTimeout( function () {
+                $( '#dice1' ).attr( 'src', 'Images/dieWhite1.png' );
+            }, 50 );
+            setTimeout( function () {
+                $( '#dice1' ).attr( 'src', 'Images/dieWhite2.png' );
+            }, 150 );
+            setTimeout( function () {
+                $( '#dice1' ).attr( 'src', 'Images/dieWhite3.png' );
+            }, 250 );
+            setTimeout( function () {
+                $( '#dice1' ).attr( 'src', 'Images/dieWhite4.png' );
+            }, 350 );
+            setTimeout( function () {
+                $( '#dice1' ).attr( 'src', 'Images/dieWhite5.png' );
+            }, 450 );
+            setTimeout( function () {
+                $( '#dice1' ).attr( 'src', 'Images/dieWhite6.png' );
+            }, 550 );
+
+            setTimeout( function () {
+                $( '#dice2' ).attr( 'src', 'Images/dieWhite1.png' );
+            }, 100 );
+            setTimeout( function () {
+                $( '#dice2' ).attr( 'src', 'Images/dieWhite2.png' );
+            }, 220 );
+            setTimeout( function () {
+                $( '#dice2' ).attr( 'src', 'Images/dieWhite3.png' );
+            }, 340 );
+            setTimeout( function () {
+                $( '#dice2' ).attr( 'src', 'Images/dieWhite4.png' );
+            }, 460 );
+            setTimeout( function () {
+                $( '#dice2' ).attr( 'src', 'Images/dieWhite5.png' );
+            }, 580 );
+            setTimeout( function () {
+                $( '#dice2' ).attr( 'src', 'Images/dieWhite6.png' );
+            }, 700 );
+
+            setTimeout( function () {
+                document.getElementById( 'dices' ).style.display = 'none';
+            }, 710 )
+        }
+    }
 
     function initGame( board ) {
         var x,
             len;
 
         initBackground();
+        createDicesButton( board );
 
         len = board.fields.length;
+
         for ( x = 0; x < len; x += 1 ) {
-            if ( x < 13 ) {
-                createRectangleListener( x, 0 );
-            } else {
-                createRectangleListener( x, 0 );
-            }
+
+            createRectangleListener( x, 0 );
         }
 
         createCirclePositionForOutGamePieces( 25, 0, 'yellow' );
@@ -345,9 +405,8 @@ var GameDraw = ( function () {
 
         createPlayersNames( board.players[0] );
         createPlayersNames( board.players[1] );
-                
-        updatePlayGround( board );
-        createDicesButton();
+
+        updatePlayGround( board );        
 
         stage.add( playersNamesLayer );
         stage.add( positionLayer );
@@ -378,11 +437,7 @@ var GameDraw = ( function () {
 
         playGroundLayer.draw();
     }
-
-    function updateDice() {
-        diceLayer.draw();
-    }
-
+        
     function updatePlayerNames() {
         playersNamesLayer.draw();
     }
@@ -415,7 +470,6 @@ var GameDraw = ( function () {
     return {
         initGame: initGame,
         updatePlayGround: updatePlayGround,
-        updateDice: updateDice,
         updatePlayerNames: updatePlayerNames,
     }
 }() );

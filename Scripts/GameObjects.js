@@ -10,8 +10,7 @@ var GameObjects = ( function () {
             BOARD_LENGTH: 26,
             DICE_DEFAULT_NUMBER: 6,
         };
-
-    // pole ot igralnoto pole
+        
     BoardField = ( function () {
         var boardField = Object.create( {} );
 
@@ -28,11 +27,10 @@ var GameObjects = ( function () {
         return boardField;
     }() );
 
-    // igralno pole
+    
     Board = ( function () {
         var board = Object.create( [] );
 
-        // Inner helper functions.
         function putBoardFields( self ) {
             var i,
                 boardLength = CONSTANTS.BOARD_LENGTH;
@@ -81,9 +79,12 @@ var GameObjects = ( function () {
 
                 this.players = [];
                 this.fields = [];
+                this.dices = [];
 
                 this.players.push( players[0] );
                 this.players.push( players[1] );
+
+                this.dices = Object.create( Dices ).init();
 
                 putBoardFields( self );
                 putPlayerOnePieces( self );
@@ -153,7 +154,7 @@ var GameObjects = ( function () {
         return board;
     }() );
 
-    // igrach
+   
     Player = ( function () {
         var player = Object.create( {} );
         var CONSTANTS_PLAYER = {
@@ -229,7 +230,7 @@ var GameObjects = ( function () {
         return player;
     }() );
 
-    // pulowe
+    
     Piece = ( function () {
         var piece = Object.create( {} );
 
@@ -268,7 +269,9 @@ var GameObjects = ( function () {
 
         Object.defineProperty( dice, 'init', {
             value: function () {
-                this.number = CONSTANTS.DICE_DEFAULT_NUMBER;
+                this.size = CONSTANTS.DICE_DEFAULT_NUMBER;
+                this.rollDice();
+
                 return this;
             }
         } );
@@ -284,7 +287,10 @@ var GameObjects = ( function () {
 
         Object.defineProperty( dice, 'rollDice', {
             value: function () {
-                return this.number = Math.floor( Math.random() * 6 ) + 1;
+                this.number = Math.floor( Math.random()
+                    * this.size ) + 1;
+
+                return this;
             }
         } );
 
@@ -292,41 +298,29 @@ var GameObjects = ( function () {
     }() );
 
     Dices = ( function () {
-        var dices = Object.create( {} ),
-            firstDice = Object.create( Dice.init() ),
-            secondDice = Object.create( Dice.init() );
+        var dices = Object.create( {} );
 
         Object.defineProperty( dices, 'init', {
             value: function () {
-                this.numbers = [];
+
+                this.all = [];
+
+                this.all.push( Object.create( Dice ).init() );
+                this.all.push( Object.create( Dice ).init() );
+
                 return this;
             }
         } );
 
         Object.defineProperty( dices, 'rollDices', {
             value: function () {
-                this.numbers.push( firstDice.rollDice() );
-                this.numbers.push( secondDice.rollDice() );
-                if ( this.numbers[0] === this.numbers[1] ) {
-                    this.numbers.push( this.numbers[0] );
-                    this.numbers.push( this.numbers[0] );
-                }
-            }
-        } );
+               
+                this.all[0].rollDice();
+                this.all[1].rollDice();
 
-        Object.defineProperty( dices, 'usedNumber', {
-            value: function ( number ) {
-                var index = this.numbers.indexOf( number );
-                this.numbers.splice( index, 1 );
+                return this;
             }
-        } );
-
-        // in case the player doesnt have any moves with those Dice numbers
-        Object.defineProperty( dices, 'clearNumbers', {
-            value: function () {
-                this.numbers.splice( 0, this.numbers.length );
-            }
-        } );
+        } );                
 
         return dices;
     }() );

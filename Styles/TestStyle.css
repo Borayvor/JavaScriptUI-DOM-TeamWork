@@ -104,3 +104,23 @@ input {
     stroke: black;
     stroke-width: 1px;
 }
+
+#dices {
+    position: fixed;
+    left: 950px;
+    top: 280px;
+    display: none;
+    border: none;
+}
+
+#dice1, #dice2 {
+    border: none;
+    margin: 0;
+    padding: 0;
+    height: 64px;
+    width: 64px;
+}
+
+#dice2 {
+    padding-left: 6px;
+}

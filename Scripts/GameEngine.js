@@ -21,10 +21,7 @@ var GameEngine = ( function () {
                       
         players[0].isOnTurn = true;
 
-        board = GameObjects.Board.init( players );
-
-        // dices.rollDices() ; dices.usedNumber(number) ; dices.clearNumbers()
-        dices = GameObjects.Dices.init();
+        board = Object.create( GameObjects.Board ).init( players );
 
         // TESTING Dices:
         //dices.rollDices();
@@ -49,6 +46,10 @@ var GameEngine = ( function () {
         board.movePiece( from, to );
         fromToPos = [];
         updatePlayGround();
+    }
+
+    function rollDices() {
+        board.dices.rollDices();
     }
 
     function update( numberOfBoardField ) {
@@ -85,30 +86,11 @@ var GameEngine = ( function () {
 
 
 
-        //function selectAndPaintLastPiece(gameField) {
-        //    var len = gameField.pieces.length;
-        //    gameField.pieces[len - 1].isChosen = true;
-        //}
-    }
-
-
-    /////////////
-
-    function test( x ) {
-
-
-    }
-
-    /////////////
-
-   
+    }       
 
     return {
         start: start,
         update: update,
-        test: test,       
+        rollDices: rollDices,
     };
 }() );
-
-
-// // All events will call GameEngine.Update() and GameDraw.Update().
