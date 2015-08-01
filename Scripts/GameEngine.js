@@ -2,45 +2,93 @@
 /// <reference path="GameObjects.js" />
 /// <reference path="MenuScripts.js" />
 
-var GameEngine = ( function () {
-    var board;
+var GameEngine = ( function () {    
     var fromToPos = [];
     var possibleMoves = [];
     var currentSizeOfDice;
+    var isGameStarted;
+    var diceSound = new Audio( 'Sounds/dice.wav' );
 
-    function start( firstPlayerName, secondPlayerName ) {                      
+    function start( firstPlayerName, secondPlayerName ) {
+        var board;
         var players = [];
 
         players.push( Object.create( GameObjects.Player ).init( firstPlayerName, 'white' ) );
         players.push( Object.create( GameObjects.Player ).init( secondPlayerName, 'black' ) );
-                      
-        players[0].isOnTurn = true;
-
+         
+        isGameStarted = false;
+       
         board = Object.create( GameObjects.Board ).init( players );
 
         GameDraw.initGame( board );
+
+        setTimeout( function () {
+            swal( 'Click dices to chose who is first !' );
+        }, 9000 );
     }
 
-    function rollDices() {
+    function update( board, numberOfBoardField ) {
+
+        if ( fromToPos.length === 0 ) {
+            fromToPos.push( numberOfBoardField );
+            return;
+        } else if ( fromToPos.length < 2 ) {
+            fromToPos.push( numberOfBoardField );
+        }
+
+        movePiece( board, fromToPos[0], fromToPos[1] );
+    }
+
+    function selectTheFirstPlayer( board ) {
+        var currentPlayer;
+
+        if ( board.dices.all[0].number > board.dices.all[1].number ) {
+            board.players[0].isOnTurn = true;
+            currentPlayer = board.players[0];
+        } else if ( board.dices.all[0].number < board.dices.all[1].number ) {
+            board.players[1].isOnTurn = true;
+            currentPlayer = board.players[1];
+        } else {
+            return;
+        }
+
+        setTimeout( function () {
+            swal( currentPlayer.name + " begins !", "Good luck!" );
+            GameDraw.updatePlayerNames( board );
+        }, 600 );
+
+        isGameStarted = true;
+    }
+
+    function rollDices( board ) {
         var currentPlayer,
             arrayOfDices,
             i,
             j;
 
-        currentPlayer = board.players[0].isOnTurn === true ? board.players[0] : board.players[1];
+        if ( isGameStarted === true ) {
+            currentPlayer = board.players[0].isOnTurn === true ? board.players[0] : board.players[1];
 
-        if ( currentPlayer.canPlayWithPieces ) {
+            if ( currentPlayer.canPlayWithPieces ) {
 
-            //// test
-            alert( 'The ' + currentPlayer.color + ' Player can not roll !' );
-            return;
+                swal( 'The ' + currentPlayer.color + ' Player can not roll again !' );
+                return;
+            }
+
+            currentPlayer.canPlayWithPieces = true;
         }
+
+        diceSound.play();
 
         possibleMoves = [];
 
         GameDraw.animateRollingDices();
         board.dices.rollDices();
-        currentPlayer.canPlayWithPieces = true;
+
+        if ( isGameStarted !== true ) {
+            selectTheFirstPlayer( board );
+            return;
+        }
 
         if ( board.dices.all[0].number !== board.dices.all[1].number ) {
             arrayOfDices = [];
@@ -48,27 +96,21 @@ var GameEngine = ( function () {
             arrayOfDices.push( board.dices.all[0].number );
             arrayOfDices.push( board.dices.all[1].number );
             possibleMoves.push( arrayOfDices );
-        } else {   
-            for ( i = 0; i < board.dices.all[0].number; i += 1 ) {
-                arrayOfDices = [];
+        } else {
+            arrayOfDices = [];
 
-                for ( j = 0; j < 4; j += 1 ) {
+            for ( i = 0; i < 4; i += 1 ) {
 
-                    arrayOfDices.push( i + 1 );
-                }
-
-                possibleMoves.push( arrayOfDices );
+                arrayOfDices.push( board.dices.all[0].number );
             }
+
+            possibleMoves.push( arrayOfDices );
         }
 
         currentSizeOfDice = possibleMoves.length - 1;
     }
-
-    function updatePlayGround() {
-        GameDraw.updatePlayGround( board );
-    }
-
-    function movePiece( from, to ) {
+       
+    function movePiece( board, from, to ) {
 
         var currentPlayer,
             nextPlayer,
@@ -84,35 +126,43 @@ var GameEngine = ( function () {
             nextPlayer = board.players[0];
         }
 
+        if ( currentPlayer.isOnTurn === false && nextPlayer.isOnTurn === false ) {
+
+            fromToPos = [];
+
+            swal( 'Roll the dices to choose who is first !' );
+            return;
+        }
+
         if ( currentPlayer.isOnTurn === false ) {
 
             fromToPos = [];
-            ////test
-            alert( 'Is not ' + nextPlayer.color.toUpperCase() + ' Player\'s turn !' );
+
+            swal( 'Is not ' + nextPlayer.color.toUpperCase() + ' Player\'s turn !' );
             return;
         }
 
         if ( currentPlayer.color !== board.fields[from].pieces[0].color ) {
 
             fromToPos = [];
-            ////test
-            alert( 'Is not ' + nextPlayer.color.toUpperCase() + ' Player\'s turn !' );
+
+            swal( 'Is not ' + nextPlayer.color.toUpperCase() + ' Player\'s turn !' );
             return;
         }
 
         if ( currentPlayer.canPlayWithPieces === false ) {
 
             fromToPos = [];
-            ////test
-            alert( 'The ' + currentPlayer.color.toUpperCase() + ' Player can not do move yet !' );
+
+            swal( 'The ' + currentPlayer.color.toUpperCase() + ' Player can not do move yet !' );
             return;
         }
 
         if ( board.fields[from].pieces.length === 0 ) {
 
             fromToPos = [];
-            ////test
-            alert( 'No Pieces at position ' + from );
+
+            swal( 'No Pieces at position ' + from );
             return;
         }
 
@@ -120,8 +170,8 @@ var GameEngine = ( function () {
             && board.fields[to].pieces[0].color !== board.fields[from].pieces[0].color ) {
 
             fromToPos = [];
-            ////test
-            alert( 'Can not move to position ' + to );
+
+            swal( 'Can not move to position ' + to );
             return;
         }
 
@@ -139,8 +189,8 @@ var GameEngine = ( function () {
             && board.fields[from].pieces[0].color === 'white' ) ) {
 
             fromToPos = [];
-            ////test
-            alert( 'Can not move to position ' + to );
+
+            swal( 'Can not move to position ' + to );
             return;
         }
 
@@ -151,8 +201,8 @@ var GameEngine = ( function () {
             || ( currentPlayer.color === 'black' && from - currentMove !== to ) ) {
 
             fromToPos = [];
-            ////test
-            alert( 'Can not move to position ' + to );
+
+            swal( 'Can not move to position ' + to );
             return;
         }
 
@@ -169,23 +219,14 @@ var GameEngine = ( function () {
             nextPlayer.isOnTurn = true;
             currentPlayer.canPlayWithPieces = false;
             GameDraw.updatePlayerNames( board );
+            diceSound.currentTime = 0;
         }
 
         fromToPos = [];
-        updatePlayGround();
+        GameDraw.updatePlayGround( board );
     }
       
-    function update( numberOfBoardField ) {
-
-        if ( fromToPos.length === 0 ) {
-            fromToPos.push( numberOfBoardField );
-            return;
-        } else if ( fromToPos.length < 2 ) {
-            fromToPos.push( numberOfBoardField );
-        }
-
-        movePiece( fromToPos[0], fromToPos[1] );
-    }       
+    
 
     return {
         start: start,

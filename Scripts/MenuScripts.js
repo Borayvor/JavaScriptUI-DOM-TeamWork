@@ -15,8 +15,6 @@ var mustSlowCircles = false,
     playerTwoName;
 
 
-//window.onload = toLoad();
-
 function toLoad() {
     var svg = document.getElementById('theSvg'),
         svgNms = 'http://www.w3.org/2000/svg',
@@ -103,7 +101,6 @@ function toLoad() {
 
         outside10 = updateChecker(outside10);
 
-        // speedOfCircle9 is the greatest speed - 9 so we stop the animation
         if (areSpeedsZero() && !goingRight && !playButton) { 
             gameExited = true;
             return;
@@ -128,6 +125,7 @@ function toLoad() {
     }
 
     function boardScreen() {
+        document.getElementById( 'textExit' ).style.display = 'none';
         document.getElementById('secondPlayerText').style.display = 'none';
         document.getElementById('secondPlayer-name').style.display = 'none';
         document.getElementById('proceedButton').style.display = 'none';
@@ -188,8 +186,7 @@ function toLoad() {
         if(playerOneName && !playerOneNameScreenOver) {
             $('#firstPlayerText').animate({opacity: "0"}, 200);
             $('input[type=text]').animate({opacity: 0},200);
-            $('#proceedButton').animate({opacity: "0"}, 200);
-            //document.getElementById('firstPlayer-name').style.display = 'none';
+            $('#proceedButton').animate({opacity: "0"}, 200);           
             playerOneNameScreenOver = true;
             setTimeout(secondNameAnimation,250);
             return;

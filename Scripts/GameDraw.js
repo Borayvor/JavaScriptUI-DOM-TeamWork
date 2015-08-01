@@ -248,7 +248,7 @@ var GameDraw = ( function () {
         backgroundLayer.add( circle );
     }
 
-    function createRectangleListener( x, y ) {
+    function createRectangleListener( board, x, y ) {
         var pos,
             posX,
             posY,
@@ -289,7 +289,7 @@ var GameDraw = ( function () {
 
             playGroundLayer.destroyChildren();
 
-            GameEngine.update( pos.x );
+            GameEngine.update( board, pos.x );
         } );
     };
 
@@ -332,11 +332,11 @@ var GameDraw = ( function () {
 
         diceLayer.addEventListener( 'click', function () {
 
-            GameEngine.rollDices();
+            GameEngine.rollDices( board );
 
             diceOne.src = 'Images/dieWhite' + board.dices.all[0].number + '.png';
             diceTwo.src = 'Images/dieWhite' + board.dices.all[1].number + '.png';
-        } );        
+        } );
     }
 
     function animateRollingDices() {
@@ -396,7 +396,7 @@ var GameDraw = ( function () {
 
         for ( x = 0; x < len; x += 1 ) {
 
-            createRectangleListener( x, 0 );
+            createRectangleListener( board, x, 0 );
         }
 
         createCirclePositionForOutGamePieces( 25, 0, 'yellow' );
@@ -405,7 +405,7 @@ var GameDraw = ( function () {
         createPlayersNames( board.players[0] );
         createPlayersNames( board.players[1] );
 
-        updatePlayGround( board );        
+        updatePlayGround( board );
 
         stage.add( playersNamesLayer );
         stage.add( positionLayer );
@@ -436,7 +436,7 @@ var GameDraw = ( function () {
 
         playGroundLayer.draw();
     }
-        
+
     function updatePlayerNames( board ) {
         playersNamesLayer.destroyChildren();
 

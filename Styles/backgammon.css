@@ -18,8 +18,8 @@ svg {
 
 #the-canvas {
     /*only used for the animation*/
-    top: 100px;
-    left: 200px;
+    top: 0;
+    left: 0;
     visibility: visible;
     display: block;
     position: fixed;
